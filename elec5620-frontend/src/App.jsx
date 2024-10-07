@@ -10,6 +10,7 @@ function App() {
             <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
+                <Route path="/main-layout" element={<MainLayout />} />
                 <Route path="/home" element={<MainLayout />} />
                 <Route path="/team" element={<MainLayout />} />
                 <Route path="/contact" element={<MainLayout />} />
