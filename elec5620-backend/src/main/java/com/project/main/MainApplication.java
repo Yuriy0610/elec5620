@@ -1,5 +1,6 @@
 package com.project.main;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -13,7 +14,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
-@RestController
 @EntityScan("com.project.main.entity")
 public class MainApplication {
 
@@ -22,13 +22,13 @@ public class MainApplication {
         return builder.build();
     }
 
-	public static void main(String[] args) {
-		SpringApplication.run(MainApplication.class, args);
+	@Bean
+	public ObjectMapper objectMapper() {
+		return new ObjectMapper();
 	}
 
-	@GetMapping("/hello")
-	public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
-		return String.format("Hello %s!", name);
+	public static void main(String[] args) {
+		SpringApplication.run(MainApplication.class, args);
 	}
 
 	// CORS config for react frontend to access backend
