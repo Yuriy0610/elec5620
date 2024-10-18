@@ -1,10 +1,10 @@
-package com.elec5620group19.elec5620backend;
+package com.project.main;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class Elec5620BackendApplicationTests {
+class MainApplicationTests {
 
 	@Test
 	void contextLoads() {
