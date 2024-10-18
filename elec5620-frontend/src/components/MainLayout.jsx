@@ -1,28 +1,63 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Home, Users, MessageCircle, Menu, LogOut, Send } from 'lucide-react';
-
-// 假设我们有一个悉尼大学的logo组件
 import SydneyUniLogo from './SydneyUniLogo';
 
 const MainLayout = () => {
     const [messages, setMessages] = useState([
         { text: "Hello! How can I help you today?", isUser: false },
-        { text: "Hi! I have a question about courses.", isUser: true },
     ]);
     const [input, setInput] = useState("");
+    const [loading, setLoading] = useState(false); // 添加加载状态
 
-    const sendMessage = (e) => {
+    // 调用后端 API 发送用户消息并获取 AI 回复
+    const sendMessage = async (e) => {
         e.preventDefault();
+
         if (input.trim()) {
-            setMessages([...messages, { text: input, isUser: true }]);
-            setInput("");
+            // 显示用户的消息在对话窗口中
+            setMessages((prevMessages) => [
+                ...prevMessages,
+                { text: input, isUser: true },
+            ]);
+            setInput(""); // 清空输入框
+
+            try {
+                const role = "doctor"; // 替换为所需角色
+                const response = await fetch(`http://localhost:8080/api/chat/${role}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json", // 确保 Content-Type 是 JSON
+                    },
+                    body: JSON.stringify({ message: input }), // 请求体匹配 ChatRequest 结构
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json(); // 解析 JSON 响应
+
+                // 将服务器响应添加到聊天窗口
+                setMessages((prevMessages) => [
+                    ...prevMessages,
+                    { text: data.response, isUser: false },
+                ]);
+            } catch (error) {
+                console.error("Error sending message:", error);
+                setMessages((prevMessages) => [
+                    ...prevMessages,
+                    { text: "Error: Unable to get a response from the server.", isUser: false },
+                ]);
+            }
         }
     };
 
+
+
     return (
         <div className="flex h-screen bg-gray-100">
-            {/* Left Sidebar */}
+            {/* 左侧栏 */}
             <div className="w-64 bg-orange-800 text-white p-6">
                 <div className="flex items-center justify-between mb-8">
                     <h1 className="text-xl font-bold">Sydney Uni Chat</h1>
@@ -54,9 +89,9 @@ const MainLayout = () => {
                 </div>
             </div>
 
-            {/* Main Content */}
+            {/* 主内容区 */}
             <div className="flex-1 flex flex-col bg-gray-50">
-                {/* Top Bar */}
+                {/* 顶部栏 */}
                 <div className="bg-white shadow-sm p-4 flex justify-between items-center">
                     <h2 className="text-xl font-semibold text-orange-800">Chat Room</h2>
                     <div className="flex items-center space-x-4">
@@ -70,12 +105,11 @@ const MainLayout = () => {
                     </div>
                 </div>
 
-                {/* Chat Area */}
+                {/* 聊天区域 */}
                 <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                    {/* Sydney University Logo */}
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <div className="w-1/5 opacity-5">
-                            <SydneyUniLogo/>
+                            <SydneyUniLogo />
                         </div>
                     </div>
 
@@ -88,12 +122,20 @@ const MainLayout = () => {
                             </div>
                         </div>
                     ))}
+
+                    {loading && (
+                        <div className="flex justify-start">
+                            <div className="max-w-xs rounded-lg px-4 py-2 shadow-sm bg-white text-gray-800">
+                                Typing...
+                            </div>
+                        </div>
+                    )}
                 </div>
 
-                {/* Input Area */}
+                {/* 输入区 */}
                 <form onSubmit={sendMessage} className="p-4 bg-white border-t">
                     <div className="flex items-center bg-gray-100 rounded-full overflow-hidden">
-                    <input
+                        <input
                             type="text"
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
