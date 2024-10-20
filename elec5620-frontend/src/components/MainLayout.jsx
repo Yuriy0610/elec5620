@@ -8,37 +8,38 @@ const MainLayout = () => {
         { text: "Hello! How can I help you today?", isUser: false },
     ]);
     const [input, setInput] = useState("");
-    const [loading, setLoading] = useState(false); // 添加加载状态
+    const [loading, setLoading] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(false); // State for collapsing the sidebar
 
-    // 调用后端 API 发送用户消息并获取 AI 回复
+    // Function to toggle sidebar collapse
+    const toggleSidebar = () => {
+        setIsCollapsed(!isCollapsed);
+    };
+
     const sendMessage = async (e) => {
         e.preventDefault();
-
         if (input.trim()) {
-            // 显示用户的消息在对话窗口中
             setMessages((prevMessages) => [
                 ...prevMessages,
                 { text: input, isUser: true },
             ]);
-            setInput(""); // 清空输入框
+            setInput("");
 
             try {
-                const role = "doctor"; // 替换为所需角色
+                const role = "doctor";
                 const response = await fetch(`http://localhost:8080/api/chat/${role}`, {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json", // 确保 Content-Type 是 JSON
+                        "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ message: input }), // 请求体匹配 ChatRequest 结构
+                    body: JSON.stringify({ message: input }),
                 });
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                const data = await response.json(); // 解析 JSON 响应
-
-                // 将服务器响应添加到聊天窗口
+                const data = await response.json();
                 setMessages((prevMessages) => [
                     ...prevMessages,
                     { text: data.response, isUser: false },
@@ -53,15 +54,16 @@ const MainLayout = () => {
         }
     };
 
-
-
     return (
         <div className="flex h-screen bg-gray-100">
             {/* 左侧栏 */}
-            <div className="w-64 bg-orange-800 text-white p-6">
+            <div className={`transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'} bg-orange-800 text-white p-6`}>
                 <div className="flex items-center justify-between mb-8">
-                    <h1 className="text-xl font-bold">Sydney Uni Chat</h1>
-                    <button className="p-1 rounded-full hover:bg-orange-700 transition-colors duration-200">
+                    <h1 className={`text-xl font-bold ${isCollapsed ? 'hidden' : ''}`}>Sydney Uni Chat</h1>
+                    <button 
+                        onClick={toggleSidebar} 
+                        className="p-1 rounded-full hover:bg-orange-700 transition-colors duration-200"
+                    >
                         <Menu size={24} />
                     </button>
                 </div>
@@ -74,18 +76,22 @@ const MainLayout = () => {
                         { icon: Newspaper, text: 'HealthNews', to: '/healthnews' },
                         { icon: ListChecks, text: 'Symptom Checker', to: '/symptom-checker' },
                     ].map(({ icon: Icon, text, to }) => (
-                        <Link key={text} to={to} className="flex items-center p-2 rounded-lg hover:bg-orange-700 transition-colors duration-200">
+                        <Link 
+                            key={text} 
+                            to={to} 
+                            className={`flex items-center p-2 rounded-lg hover:bg-orange-700 transition-colors duration-200 ${isCollapsed ? 'justify-center' : ''}`}
+                        >
                             <Icon className="mr-3" size={20} />
-                            {text}
+                            <span className={`${isCollapsed ? 'hidden' : ''}`}>{text}</span>
                         </Link>
                     ))}
                 </nav>
                 <div className="mt-8">
-                    <h2 className="text-lg font-semibold mb-4">Chat History</h2>
+                    <h2 className={`text-lg font-semibold mb-4 ${isCollapsed ? 'hidden' : ''}`}>Chat History</h2>
                     <ul className="space-y-2">
                         {['Chat 1', 'Chat 2', 'Chat 3'].map((chat) => (
                             <li key={chat} className="p-2 rounded-lg hover:bg-orange-700 transition-colors duration-200 cursor-pointer">
-                                {chat}
+                                {isCollapsed ? 'C' : chat} {/* Show an abbreviation when collapsed */}
                             </li>
                         ))}
                     </ul>
