@@ -4,6 +4,8 @@ import Login from './components/Login';
 import Register from './components/Register';
 import MainLayout from './components/MainLayout';
 import SymptomChecker from './components/SymptomChecker';
+import Appointment from './components/Appointment';
+import Confirmation from './components/Confirmation';
 
 function App() {
     return (
@@ -17,6 +19,8 @@ function App() {
                 <Route path="/contact" element={<MainLayout />} />
                 <Route path="/" element={<Navigate to="/login" replace />} />
                 <Route path="/symptom-checker" element={<SymptomChecker />} />
+                <Route path="/appointment" element={<Appointment />} />
+                <Route path="/confirmation" element={<Confirmation />} />
             </Routes>
         </Router>
     );
