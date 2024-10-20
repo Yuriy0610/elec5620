@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Home, Users, MessageCircle, Menu, LogOut, Send, CircleCheckBig, Newspaper, ListChecks } from 'lucide-react';
+import { Home, Users, MessageCircle, Menu, LogOut, Send, CircleCheckBig, Newspaper, ListChecks, SmilePlus } from 'lucide-react';
 import SydneyUniLogo from './SydneyUniLogo';
 
 const MainLayout = () => {
@@ -75,6 +75,7 @@ const MainLayout = () => {
                         { icon: CircleCheckBig, text: 'Appointment', to: '/appointment' },
                         { icon: Newspaper, text: 'HealthNews', to: '/healthnews' },
                         { icon: ListChecks, text: 'Symptom Checker', to: '/symptom-checker' },
+                        { icon: SmilePlus, text: 'Mental Health', to: '/mentalhealth' },
                     ].map(({ icon: Icon, text, to }) => (
                         <Link 
                             key={text} 

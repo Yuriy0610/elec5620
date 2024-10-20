@@ -6,6 +6,7 @@ import MainLayout from './components/MainLayout';
 import SymptomChecker from './components/SymptomChecker';
 import Appointment from './components/Appointment';
 import Confirmation from './components/Confirmation';
+import MentalHealthSupport from './components/MentalHealthSupport';
 
 function App() {
     return (
@@ -21,6 +22,7 @@ function App() {
                 <Route path="/symptom-checker" element={<SymptomChecker />} />
                 <Route path="/appointment" element={<Appointment />} />
                 <Route path="/confirmation" element={<Confirmation />} />
+                <Route path="/mentalhealth" element={<MentalHealthSupport />} />
             </Routes>
         </Router>
     );
