@@ -61,7 +61,7 @@ const MentalHealthSupport = () => {
         )}
 
         <button
-          onClick={() => navigate('/main')}
+          onClick={() => navigate('/main-layout')}
           className="mt-6 w-full bg-gray-200 text-gray-600 py-2 rounded-lg hover:bg-gray-300 transition-colors duration-200"
         >
           Back to Main Page
