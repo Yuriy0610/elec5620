@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Home, Users, MessageCircle, Menu, LogOut, Send, CircleCheckBig, Newspaper  } from 'lucide-react';
+import { Home, Users, MessageCircle, Menu, LogOut, Send, CircleCheckBig, Newspaper, ListChecks } from 'lucide-react';
 import SydneyUniLogo from './SydneyUniLogo';
 
 const MainLayout = () => {
@@ -72,6 +72,7 @@ const MainLayout = () => {
                         { icon: MessageCircle, text: 'Contact', to: '/contact' },
                         { icon: CircleCheckBig, text: 'Appointment', to: '/appointment' },
                         { icon: Newspaper, text: 'HealthNews', to: '/healthnews' },
+                        { icon: ListChecks, text: 'Symptom Checker', to: '/symptom-checker' },
                     ].map(({ icon: Icon, text, to }) => (
                         <Link key={text} to={to} className="flex items-center p-2 rounded-lg hover:bg-orange-700 transition-colors duration-200">
                             <Icon className="mr-3" size={20} />
