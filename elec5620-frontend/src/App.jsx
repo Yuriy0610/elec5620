@@ -3,8 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import Login from './components/Login';
 import Register from './components/Register';
 import MainLayout from './components/MainLayout';
-import Appointment from './components/Appointment';
-import Confirmation from './components/Confirmation';
+import SymptomChecker from './components/SymptomChecker';
 
 function App() {
     return (
@@ -17,9 +16,10 @@ function App() {
                 <Route path="/team" element={<MainLayout />} />
                 <Route path="/contact" element={<MainLayout />} />
                 <Route path="/" element={<Navigate to="/login" replace />} />
-                <Route path="/appointment" element={<Appointment />} />
-                <Route path="/confirmation" element={<Confirmation />} />
+                <Route path="/symptom-checker" element={<SymptomChecker />} />
             </Routes>
         </Router>
     );
 }
+
+export default App;
