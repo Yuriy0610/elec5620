@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Home, Users, MessageCircle, Menu, LogOut, Send, CircleCheckBig, Newspaper, ListChecks, SmilePlus } from 'lucide-react';
 import SydneyUniLogo from './SydneyUniLogo';
 
@@ -10,6 +10,7 @@ const MainLayout = () => {
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false); // State for collapsing the sidebar
+    const navigate = useNavigate(); // Use navigate to control routing
 
     // Function to toggle sidebar collapse
     const toggleSidebar = () => {
@@ -105,7 +106,10 @@ const MainLayout = () => {
                 <div className="bg-white shadow-sm p-4 flex justify-between items-center">
                     <h2 className="text-xl font-semibold text-orange-800">Chat Room</h2>
                     <div className="flex items-center space-x-4">
-                        <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-800 font-bold">
+                        <div 
+                            className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-800 font-bold cursor-pointer"
+                            onClick={() => navigate('/user-info')}
+                        >
                             U
                         </div>
                         <Link to="/login" className="flex items-center text-gray-600 hover:text-orange-800 transition-colors duration-200">
