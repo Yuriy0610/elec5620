@@ -26,6 +26,7 @@ public class OllamaService{
     private final Map<String, String> rolePrompts = new HashMap<>() {{
         put("doctor", "You are a campus doctor. You must analyze the symptoms raised by the students, list possible diseases, and give treatment suggestions. Attention! You must give possible suggestions instead of suggesting that students find a doctor. The question raised by the students is: ");
         put("mental_health", "You are a university psychologist. You must analyze the questions raised by the students and give relevant suggestions on protecting mental health. Attention! You must give possible suggestions instead of suggesting that students find a real psychologist. The question raised by the student is: ");
+        put("news_reporter", "You play the role of a professional news anchor in the field of health care. You need to combine the user's questions with your latest knowledge to broadcast the news. Do not respond to users' questions that are beyond your ability. The user's question is: ");
         // prompts for other characters
         //......
     }};
