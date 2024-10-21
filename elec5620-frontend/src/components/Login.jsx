@@ -6,6 +6,7 @@ const Login = () => {
         email: '',
         password: '',
     });
+    const [error, setError] = useState(null); // To store error messages
 
     const navigate = useNavigate();
 
@@ -14,15 +15,35 @@ const Login = () => {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // validate login credentials here
+        setError(null); // Reset error message
 
-        // Simulate successful login
-        console.log('Logged in with: ', formData);
+        try {
+            // Send login request to the backend
+            const response = await fetch('http://localhost:8080/api/users/login', { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+            
 
-        // Redirect to the main layout (chat room)
-        navigate('/main-layout'); 
+            if (!response.ok) {
+                const message = await response.text();
+                throw new Error(message); // Throw error to handle it in catch block
+            }
+
+            const user = await response.json();
+            console.log('Logged in successfully:', user);
+
+            // Redirect to the main layout (chat room) on successful login
+            navigate('/main-layout');
+        } catch (error) {
+            setError(error.message); // Set error message to be displayed
+            console.error('Login failed:', error);
+        }
     };
 
     return (
@@ -46,6 +67,7 @@ const Login = () => {
                         onChange={handleChange}
                         placeholder="Password"
                     />
+                    {error && <p className="text-red-500">{error}</p>} {/* Display error message */}
                     <button type="submit" className="w-full p-2 text-white rounded bg-orange-600 hover:bg-orange-700">
                         Login
                     </button>

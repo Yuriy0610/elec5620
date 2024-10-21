@@ -25,4 +25,17 @@ public class UserController {
             return ResponseEntity.status(409).body(e.getMessage()); // 409 Conflict if email already exists
         }
     }
+
+    @CrossOrigin(origins = "http://localhost:5173") 
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody User loginRequest) {
+        try {
+            User user = userService.loginUser(loginRequest.getEmail(), loginRequest.getPassword());
+            return ResponseEntity.ok(user); // Return the user object with a 200 OK status
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body(e.getMessage()); // 401 Unauthorized for login failures
+        }
+    }
+
+
 }

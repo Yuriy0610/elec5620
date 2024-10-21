@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
 @Service
 public class UserService {
 
@@ -20,5 +19,19 @@ public class UserService {
             throw new Exception("User with this email already exists.");
         }
         return userRepository.save(user);
+    }
+
+    public User loginUser(String email, String password) throws Exception {
+        Optional<User> user = userRepository.findByEmail(email);
+        if (!user.isPresent()) {
+            throw new Exception("User not found."); // Handle user not found case
+        }
+
+        // Check if password matches
+        if (!user.get().getPassword().equals(password)) {
+            throw new Exception("Invalid credentials."); // Handle wrong password
+        }
+
+        return user.get(); // Return user if login is successful
     }
 }
