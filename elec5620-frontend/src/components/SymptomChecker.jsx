@@ -17,6 +17,7 @@ const SymptomChecker = () => {
   });
 
   const [submitted, setSubmitted] = useState(false); // 添加提交状态
+  const [llmResponse, setLlmResponse] = useState(''); // 保存 LLM 的回复
   const navigate = useNavigate(); // 用于导航到主页面
 
   const handleChange = (e, symptom) => {
@@ -34,10 +35,36 @@ const SymptomChecker = () => {
     setFormData({ ...formData, additionalInfo: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log('Submitted symptoms and additional info:', formData);
-    setSubmitted(true); // 设置为已提交状态
+
+    try {
+      const role = 'doctor'; // 假设角色是医生，您可以根据需要更改角色
+      const response = await fetch(`/api/chat/${role}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: JSON.stringify(formData), // 将症状数据作为 message 发送
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('提交症状信息失败');
+      }
+
+      const result = await response.json();
+      console.log('LLM 建议:', result);
+
+      // 保存 LLM 的建议
+      setLlmResponse(result.response);
+      setSubmitted(true); // 设置为已提交状态
+    } catch (error) {
+      console.error('错误:', error);
+      alert('提交过程中出现问题，请稍后再试。');
+    }
   };
 
   const goToMainPage = () => {
@@ -94,7 +121,7 @@ const SymptomChecker = () => {
       <div className="min-h-screen bg-gray-200 flex flex-col items-center justify-center">
         <div className="w-full max-w-md p-8 bg-white shadow-lg rounded-lg text-center">
           <h2 className="text-2xl font-bold text-green-600 mb-4">Symptoms Submitted Successfully!</h2>
-          <p className="text-gray-600 mb-8">Back to the main page to view suggestions and results.</p>
+          <p className="text-gray-600 mb-8">{`LLM 建议: ${llmResponse}`}</p>
           <button
             onClick={goToMainPage}
             className="w-full py-3 bg-orange-700 text-white font-bold rounded-lg hover:bg-orange-800 transition-colors duration-200"
@@ -156,7 +183,6 @@ const SymptomChecker = () => {
         <button
           type="submit"
           className="mt-8 w-full py-4 bg-orange-700 text-white font-bold rounded-lg hover:bg-orange-800 transition-colors duration-200"
-          onClick={handleSubmit}
         >
           Submit Symptoms
         </button>

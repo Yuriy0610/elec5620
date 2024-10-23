@@ -1,58 +1,14 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Home, Users, MessageCircle, Menu, LogOut, Send, CircleCheckBig, Newspaper, ListChecks, SmilePlus } from 'lucide-react';
-import SydneyUniLogo from './SydneyUniLogo';
+import { Link, useNavigate, Outlet } from 'react-router-dom'; // 引入 Outlet
+import { Home, Users, MessageCircle, Menu, LogOut, CircleCheckBig, Newspaper, ListChecks, SmilePlus, MessageSquare } from 'lucide-react'; // 引入新的图标
 
 const MainLayout = () => {
-    const [messages, setMessages] = useState([
-        { text: "Hello! How can I help you today?", isUser: false },
-    ]);
-    const [input, setInput] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [isCollapsed, setIsCollapsed] = useState(false); // State for collapsing the sidebar
-    const navigate = useNavigate(); // Use navigate to control routing
+    const [isCollapsed, setIsCollapsed] = useState(false); // 用于侧边栏折叠状态
+    const navigate = useNavigate(); // 用于控制路由导航
 
-    // Function to toggle sidebar collapse
+    // 切换侧边栏的折叠状态
     const toggleSidebar = () => {
         setIsCollapsed(!isCollapsed);
-    };
-
-    const sendMessage = async (e) => {
-        e.preventDefault();
-        if (input.trim()) {
-            setMessages((prevMessages) => [
-                ...prevMessages,
-                { text: input, isUser: true },
-            ]);
-            setInput("");
-
-            try {
-                const role = "doctor";
-                const response = await fetch(`http://localhost:8080/api/chat/${role}`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ message: input }),
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                setMessages((prevMessages) => [
-                    ...prevMessages,
-                    { text: data.response, isUser: false },
-                ]);
-            } catch (error) {
-                console.error("Error sending message:", error);
-                setMessages((prevMessages) => [
-                    ...prevMessages,
-                    { text: "Error: Unable to get a response from the server.", isUser: false },
-                ]);
-            }
-        }
     };
 
     return (
@@ -70,13 +26,15 @@ const MainLayout = () => {
                 </div>
                 <nav className="space-y-4">
                     {[
-                        { icon: Home, text: 'Home', to: '/home' },
-                        { icon: Users, text: 'My Team', to: '/team' },
-                        { icon: MessageCircle, text: 'Contact', to: '/contact' },
-                        { icon: CircleCheckBig, text: 'Appointment', to: '/appointment' },
-                        { icon: Newspaper, text: 'HealthNews', to: '/healthnews' },
-                        { icon: ListChecks, text: 'Symptom Checker', to: '/symptom-checker' },
-                        { icon: SmilePlus, text: 'Mental Health', to: '/mentalhealth' },
+                        { icon: Home, text: 'Home', to: '/main-layout' },
+                        { icon: Users, text: 'My Team', to: '/main-layout/team' },
+                        { icon: MessageCircle, text: 'Contact', to: '/main-layout/contact' },
+                        { icon: CircleCheckBig, text: 'Appointment', to: '/main-layout/appointment' },
+                        { icon: Newspaper, text: 'HealthNews', to: '/main-layout/healthnews' },
+                        { icon: ListChecks, text: 'Symptom Checker', to: '/main-layout/symptom-checker' },
+                        { icon: SmilePlus, text: 'Mental Health', to: '/main-layout/mentalhealth' },
+                        // 新增 Chat with AI 菜单项
+                        { icon: MessageSquare, text: 'Chat with AI', to: '/main-layout/chat-ai' },
                     ].map(({ icon: Icon, text, to }) => (
                         <Link 
                             key={text} 
@@ -88,16 +46,6 @@ const MainLayout = () => {
                         </Link>
                     ))}
                 </nav>
-                <div className="mt-8">
-                    <h2 className={`text-lg font-semibold mb-4 ${isCollapsed ? 'hidden' : ''}`}>Chat History</h2>
-                    <ul className="space-y-2">
-                        {['Chat 1', 'Chat 2', 'Chat 3'].map((chat) => (
-                            <li key={chat} className="p-2 rounded-lg hover:bg-orange-700 transition-colors duration-200 cursor-pointer">
-                                {isCollapsed ? 'C' : chat} {/* Show an abbreviation when collapsed */}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
             </div>
 
             {/* 主内容区 */}
@@ -119,48 +67,10 @@ const MainLayout = () => {
                     </div>
                 </div>
 
-                {/* 聊天区域 */}
+                {/* 动态渲染的内容区域 */}
                 <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div className="w-1/5 opacity-5">
-                            <SydneyUniLogo />
-                        </div>
-                    </div>
-
-                    {messages.map((msg, index) => (
-                        <div key={index} className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'}`}>
-                            <div className={`max-w-xs rounded-lg px-4 py-2 shadow-sm ${
-                                msg.isUser ? 'bg-orange-600 text-white' : 'bg-white text-gray-800'
-                            }`}>
-                                {msg.text}
-                            </div>
-                        </div>
-                    ))}
-
-                    {loading && (
-                        <div className="flex justify-start">
-                            <div className="max-w-xs rounded-lg px-4 py-2 shadow-sm bg-white text-gray-800">
-                                Typing...
-                            </div>
-                        </div>
-                    )}
+                    <Outlet /> {/* 渲染嵌套的子路由内容 */}
                 </div>
-
-                {/* 输入区 */}
-                <form onSubmit={sendMessage} className="p-4 bg-white border-t">
-                    <div className="flex items-center bg-gray-100 rounded-full overflow-hidden">
-                        <input
-                            type="text"
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            placeholder="Type your message..."
-                            className="flex-1 p-3 bg-transparent focus:outline-none"
-                        />
-                        <button type="submit" className="bg-orange-700 text-white p-3 rounded-full hover:bg-orange-800 transition-colors duration-200">
-                            <Send size={20} />
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
     );
