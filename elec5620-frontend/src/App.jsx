@@ -8,7 +8,8 @@ import Appointment from './components/Appointment';
 import Confirmation from './components/Confirmation';
 import MentalHealthSupport from './components/MentalHealthSupport';
 import ChatWithAi from './components/chatwithai'; 
-import AiResponseSymptomChecker from './components/AiResponse_symptomchecker'; 
+import AiResponseSymptomChecker from './components/AiResponse_symptomchecker';
+import HealthNews from './components/HealthNews';
 
 function App() {
     return (
@@ -28,6 +29,10 @@ function App() {
                     <Route path="mentalhealth" element={<MentalHealthSupport />} />
                     <Route path="chat-ai" element={<ChatWithAi />} /> {/* 添加 ChatWithAi 路由 */}
                     <Route path="ai-response" element={<AiResponseSymptomChecker />} />
+                    <Route path="healthnews" element={<HealthNews />} />
+
+
+
                 </Route>
 
                 {/* 重定向到登录页面 */}
