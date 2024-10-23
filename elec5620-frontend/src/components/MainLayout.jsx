@@ -27,7 +27,6 @@ const MainLayout = () => {
                 <nav className="space-y-4">
                     {[
                         { icon: Home, text: 'Home', to: '/main-layout' },
-                        { icon: Users, text: 'My Team', to: '/main-layout/team' },
                         { icon: MessageCircle, text: 'Contact', to: '/main-layout/contact' },
                         { icon: CircleCheckBig, text: 'Appointment', to: '/main-layout/appointment' },
                         { icon: Newspaper, text: 'HealthNews', to: '/main-layout/healthnews' },
