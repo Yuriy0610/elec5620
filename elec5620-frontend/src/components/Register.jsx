@@ -112,7 +112,6 @@ const Register = () => {
                         <option value="" disabled className="text-gray-400">Please select your registration identity</option>
                         <option value="student" className="text-black">Student</option>
                         <option value="gp" className="text-black">GP</option>
-                        <option value="administrator" className="text-black">Administrator</option>
                     </select>
 
                     <button type="submit" className="w-full p-2 text-white rounded bg-orange-600 hover:bg-orange-700">
