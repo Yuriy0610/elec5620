@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Home, Users, MessageCircle, Menu, LogOut, Send, CircleCheckBig, Newspaper, ListChecks, SmilePlus } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Home, Users, MessageCircle, Menu, LogOut, Send, CircleCheckBig, Newspaper } from 'lucide-react';
 import SydneyUniLogo from './SydneyUniLogo';
 
 const MainLayout = () => {
@@ -9,21 +9,26 @@ const MainLayout = () => {
     ]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
-    const [isCollapsed, setIsCollapsed] = useState(false); // State for collapsing the sidebar
-    const navigate = useNavigate(); // Use navigate to control routing
-
-    // Function to toggle sidebar collapse
-    const toggleSidebar = () => {
-        setIsCollapsed(!isCollapsed);
-    };
+    const [showTimePicker, setShowTimePicker] = useState(false);
+    const [selectedDate, setSelectedDate] = useState("");
+    const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
+    const [error, setError] = useState(""); // 新增 error 状态
 
     const sendMessage = async (e) => {
         e.preventDefault();
+
         if (input.trim()) {
             setMessages((prevMessages) => [
                 ...prevMessages,
                 { text: input, isUser: true },
             ]);
+
+            if (input.toLowerCase().includes("appointment")||input.toLowerCase().includes("reservation")) {
+                setShowTimePicker(true);
+                setInput("");
+                return;
+            }
+
             setInput("");
 
             try {
@@ -41,6 +46,7 @@ const MainLayout = () => {
                 }
 
                 const data = await response.json();
+
                 setMessages((prevMessages) => [
                     ...prevMessages,
                     { text: data.response, isUser: false },
@@ -55,16 +61,38 @@ const MainLayout = () => {
         }
     };
 
+    const handleConfirm = () => {
+        if (!selectedDate || !selectedTimeSlot) {
+            setError("Please select both a date and a time slot."); // 设置错误消息
+            return;
+        }
+
+        setMessages((prevMessages) => [
+            ...prevMessages,
+            { text: `Appointment confirmed for date: ${selectedDate}, time slot: ${selectedTimeSlot}`, isUser: false },
+        ]);
+        setShowTimePicker(false);
+        setSelectedDate("");
+        setSelectedTimeSlot("");
+        setError(""); // 清空错误消息
+    };
+
+    const handleTimeSlotClick = (timeSlot) => {
+        setSelectedTimeSlot(timeSlot);
+    };
+
+    const getTomorrowDate = () => {
+        const today = new Date();
+        today.setDate(today.getDate() + 1);
+        return today.toISOString().split('T')[0];
+    };
+
     return (
         <div className="flex h-screen bg-gray-100">
-            {/* 左侧栏 */}
-            <div className={`transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'} bg-orange-800 text-white p-6`}>
+            <div className="w-64 bg-orange-800 text-white p-6">
                 <div className="flex items-center justify-between mb-8">
-                    <h1 className={`text-xl font-bold ${isCollapsed ? 'hidden' : ''}`}>Sydney Uni Chat</h1>
-                    <button 
-                        onClick={toggleSidebar} 
-                        className="p-1 rounded-full hover:bg-orange-700 transition-colors duration-200"
-                    >
+                    <h1 className="text-xl font-bold">Sydney Uni Chat</h1>
+                    <button className="p-1 rounded-full hover:bg-orange-700 transition-colors duration-200">
                         <Menu size={24} />
                     </button>
                 </div>
@@ -75,41 +103,20 @@ const MainLayout = () => {
                         { icon: MessageCircle, text: 'Contact', to: '/contact' },
                         { icon: CircleCheckBig, text: 'Appointment', to: '/appointment' },
                         { icon: Newspaper, text: 'HealthNews', to: '/healthnews' },
-                        { icon: ListChecks, text: 'Symptom Checker', to: '/symptom-checker' },
-                        { icon: SmilePlus, text: 'Mental Health', to: '/mentalhealth' },
                     ].map(({ icon: Icon, text, to }) => (
-                        <Link 
-                            key={text} 
-                            to={to} 
-                            className={`flex items-center p-2 rounded-lg hover:bg-orange-700 transition-colors duration-200 ${isCollapsed ? 'justify-center' : ''}`}
-                        >
+                        <Link key={text} to={to} className="flex items-center p-2 rounded-lg hover:bg-orange-700 transition-colors duration-200">
                             <Icon className="mr-3" size={20} />
-                            <span className={`${isCollapsed ? 'hidden' : ''}`}>{text}</span>
+                            {text}
                         </Link>
                     ))}
                 </nav>
-                <div className="mt-8">
-                    <h2 className={`text-lg font-semibold mb-4 ${isCollapsed ? 'hidden' : ''}`}>Chat History</h2>
-                    <ul className="space-y-2">
-                        {['Chat 1', 'Chat 2', 'Chat 3'].map((chat) => (
-                            <li key={chat} className="p-2 rounded-lg hover:bg-orange-700 transition-colors duration-200 cursor-pointer">
-                                {isCollapsed ? 'C' : chat} {/* Show an abbreviation when collapsed */}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
             </div>
 
-            {/* 主内容区 */}
             <div className="flex-1 flex flex-col bg-gray-50">
-                {/* 顶部栏 */}
                 <div className="bg-white shadow-sm p-4 flex justify-between items-center">
                     <h2 className="text-xl font-semibold text-orange-800">Chat Room</h2>
                     <div className="flex items-center space-x-4">
-                        <div 
-                            className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-800 font-bold cursor-pointer"
-                            onClick={() => navigate('/user-info')}
-                        >
+                        <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-800 font-bold">
                             U
                         </div>
                         <Link to="/login" className="flex items-center text-gray-600 hover:text-orange-800 transition-colors duration-200">
@@ -119,7 +126,6 @@ const MainLayout = () => {
                     </div>
                 </div>
 
-                {/* 聊天区域 */}
                 <div className="flex-1 overflow-y-auto p-6 space-y-4">
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <div className="w-1/5 opacity-5">
@@ -129,9 +135,7 @@ const MainLayout = () => {
 
                     {messages.map((msg, index) => (
                         <div key={index} className={`flex ${msg.isUser ? 'justify-end' : 'justify-start'}`}>
-                            <div className={`max-w-xs rounded-lg px-4 py-2 shadow-sm ${
-                                msg.isUser ? 'bg-orange-600 text-white' : 'bg-white text-gray-800'
-                            }`}>
+                            <div className={`max-w-xs rounded-lg px-4 py-2 shadow-sm ${msg.isUser ? 'bg-orange-600 text-white' : 'bg-white text-gray-800'}`}>
                                 {msg.text}
                             </div>
                         </div>
@@ -144,9 +148,52 @@ const MainLayout = () => {
                             </div>
                         </div>
                     )}
+
+                    {showTimePicker && (
+                        <div className="flex justify-center mt-4">
+                            <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+                                <h2 className="text-lg font-semibold">Select Appointment Time</h2>
+                                <input
+                                    type="date"
+                                    value={selectedDate}
+                                    onChange={(e) => setSelectedDate(e.target.value)}
+                                    min={getTomorrowDate()}
+                                    className="border rounded p-2 mt-2 w-full"
+                                />
+                                <div className="mt-4">
+                                    <h3 className="text-md font-semibold">Select Time Slot:</h3>
+                                    <div className="grid grid-cols-2 gap-2 mt-2">
+                                        {["8:00-9:00", "9:00-10:00", "10:00-11:00", "14:00-15:00", "15:00-16:00"].map((timeSlot) => (
+                                            <button
+                                                key={timeSlot}
+                                                onClick={() => handleTimeSlotClick(timeSlot)}
+                                                className={`border rounded py-2 px-4 ${selectedTimeSlot === timeSlot ? 'bg-orange-600 text-white' : 'bg-gray-200 hover:bg-orange-500 hover:text-white'}`}
+                                            >
+                                                {timeSlot}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {error && ( // 显示错误消息
+                                    <div className="text-red-600 mt-2">
+                                        {error}
+                                    </div>
+                                )}
+
+                                <div className="flex justify-end mt-4">
+                                    <button
+                                        className="bg-orange-700 text-white px-4 py-2 rounded hover:bg-orange-800"
+                                        onClick={handleConfirm}
+                                    >
+                                        Confirm
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
-                {/* 输入区 */}
                 <form onSubmit={sendMessage} className="p-4 bg-white border-t">
                     <div className="flex items-center bg-gray-100 rounded-full overflow-hidden">
                         <input
@@ -167,3 +214,4 @@ const MainLayout = () => {
 };
 
 export default MainLayout;
+
