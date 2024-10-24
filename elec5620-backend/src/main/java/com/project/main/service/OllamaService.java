@@ -15,7 +15,7 @@ import java.util.*;
 
 @Service
 @Slf4j
-public class OllamaService{
+public class OllamaService {
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
@@ -24,11 +24,10 @@ public class OllamaService{
     private String ollamaBaseUrl;
 
     private final Map<String, String> rolePrompts = new HashMap<>() {{
-        put("doctor", "You are a campus doctor. You must analyze the symptoms raised by the students, list possible diseases, and give treatment suggestions. Attention! You must give possible suggestions instead of suggesting that students find a doctor. The question raised by the students is: ");
-        put("mental_health", "You are a university psychologist. You must analyze the questions raised by the students and give relevant suggestions on protecting mental health. Attention! You must give possible suggestions instead of suggesting that students find a real psychologist. The question raised by the student is: ");
-        put("news_reporter", "You play the role of a professional news anchor in the field of health care. You need to combine the user's questions with your latest knowledge to broadcast the news. Do not respond to users' questions that are beyond your ability. The user's question is: ");
-        // prompts for other characters
-        //......
+        put("doctor", "You are a campus doctor. Analyze the symptoms raised by students from ");
+        put("mental_health", "You are a university psychologist. Provide mental health suggestions to students from ");
+        put("news_reporter", "You are a health news reporter, broadcasting relevant health news for students from ");
+        put("health_support_quick_links", "Thanks for dropping by! Here are the links you are looking for from ");
     }};
 
     public OllamaService(RestTemplate restTemplate, ObjectMapper objectMapper) {
@@ -36,8 +35,16 @@ public class OllamaService{
         this.objectMapper = objectMapper;
     }
 
-    public ChatResponse chat(String role, String message) {
-        String prompt = rolePrompts.getOrDefault(role, "You are a helpful assistant. ") + message;
+    // Updated chat method to accept university name
+    public ChatResponse chat(String role, String message, String universityName) {
+        String prompt;
+        if ("health_support_quick_links".equals(role)) {
+            // Include university name in the prompt for health_support_quick_links
+            prompt = rolePrompts.get(role) + universityName + ".";
+        } else {
+            // Default behavior for other roles
+            prompt = rolePrompts.getOrDefault(role, "You are a helpful assistant for ") + message;
+        }
 
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model", "llama3.2");
@@ -52,6 +59,7 @@ public class OllamaService{
 
         log.info("Raw Ollama API response: {}", response);
 
+        // Parse the response from Ollama
         StringBuilder fullResponse = new StringBuilder();
         try {
             String[] lines = response.split("\n");
