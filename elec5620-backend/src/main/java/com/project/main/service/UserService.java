@@ -1,12 +1,12 @@
 package com.project.main.service;
 
-
 import com.project.main.entity.User;
 import com.project.main.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+
 @Service
 public class UserService {
 
@@ -18,6 +18,8 @@ public class UserService {
         if (existingUser.isPresent()) {
             throw new Exception("User with this email already exists.");
         }
+
+        // Save the user along with the role
         return userRepository.save(user);
     }
 

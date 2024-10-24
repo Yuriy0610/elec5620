@@ -19,6 +19,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)  // Add this field
+    private String role;
+
     // Getters and Setters
 
     public Long getId() {
@@ -51,5 +54,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getRole() {  // Getter for role
+        return role;
+    }
+
+    public void setRole(String role) {  // Setter for role
+        this.role = role;
     }
 }
