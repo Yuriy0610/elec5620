@@ -17,8 +17,8 @@ const MainLayout = () => {
             <div className={`transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'} bg-orange-800 text-white p-6`}>
                 <div className="flex items-center justify-between mb-8">
                     <h1 className={`text-xl font-bold ${isCollapsed ? 'hidden' : ''}`}>Sydney Uni Chat</h1>
-                    <button 
-                        onClick={toggleSidebar} 
+                    <button
+                        onClick={toggleSidebar}
                         className="p-1 rounded-full hover:bg-orange-700 transition-colors duration-200"
                     >
                         <Menu size={24} />
@@ -35,9 +35,9 @@ const MainLayout = () => {
                         // 新增 Chat with AI 菜单项
                         { icon: MessageSquare, text: 'Chat with AI', to: '/main-layout/chat-ai' },
                     ].map(({ icon: Icon, text, to }) => (
-                        <Link 
-                            key={text} 
-                            to={to} 
+                        <Link
+                            key={text}
+                            to={to}
                             className={`flex items-center p-2 rounded-lg hover:bg-orange-700 transition-colors duration-200 ${isCollapsed ? 'justify-center' : ''}`}
                         >
                             <Icon className="mr-3" size={20} />
@@ -53,9 +53,9 @@ const MainLayout = () => {
                 <div className="bg-white shadow-sm p-4 flex justify-between items-center">
                     <h2 className="text-xl font-semibold text-orange-800">Chat Room</h2>
                     <div className="flex items-center space-x-4">
-                        <div 
+                        <div
                             className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-800 font-bold cursor-pointer"
-                            onClick={() => navigate('/user-info')}
+                            onClick={() => navigate('/main-layout/user-info')}
                         >
                             U
                         </div>
