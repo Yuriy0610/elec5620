@@ -82,7 +82,7 @@ public class OllamaService {
         String prompt;
 
         if ("news_reporter".equals(role)) {
-            prompt = "What are some most recent health alerts and care tips in Australia?";
+            prompt = "What are some most recent health alerts and care tips in Australia? Also specify the name and links to the sources for each of the news and health care tips.";
 
         } else {
             prompt = rolePrompts.getOrDefault(role, "You are a helpful assistant for ") + message;

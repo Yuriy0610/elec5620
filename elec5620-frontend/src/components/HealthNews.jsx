@@ -45,6 +45,18 @@ const HealthNews = () => {
         fetchHealthNews(); // Execute the fetch function
     }, []);
 
+    // Helper function to determine the type of line
+    const getColorClass = (line) => {
+        if (line.toLowerCase().includes("alert")) {
+            return 'bg-red-100'; // Light red for health alerts
+        } else if (line.toLowerCase().includes("source")) {
+            return 'bg-yellow-100'; // Yellow for sources
+        } else if (line.toLowerCase().includes("tip")) {
+            return 'bg-green-100'; // Light green for health tips
+        }
+        return 'bg-blue-100'; // Default color
+    };
+
     return (
         <div
             className="min-h-screen bg-gradient-to-br from-blue-200 to-indigo-400 p-10"
@@ -76,9 +88,7 @@ const HealthNews = () => {
                             {newsResponse.map((line, index) => (
                                 <div
                                     key={index}
-                                    className={`p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 ${
-                                        index % 2 === 0 ? 'bg-blue-100' : 'bg-green-100'
-                                    }`} // Alternate background colors
+                                    className={`p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 ${getColorClass(line)}`}
                                 >
                                     {/* Render Markdown content */}
                                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
