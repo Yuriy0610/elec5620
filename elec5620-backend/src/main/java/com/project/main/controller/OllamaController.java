@@ -24,43 +24,20 @@ public class OllamaController {
 
     private final OllamaService ollamaService;
 
-//     @PostMapping("/chat/{role}")
-//     @Operation(summary = "Chat with AI", description = "Chat with AI in different roles such as doctor, mental health counselor, etc.")
-//     @ApiResponses(value = {
-//             @ApiResponse(responseCode = "200", description = "Successful operation",
-//                     content = @Content(schema = @Schema(implementation = ChatResponse.class))),
-//             @ApiResponse(responseCode = "400", description = "Invalid role supplied",
-//                     content = @Content),
-//             @ApiResponse(responseCode = "500", description = "Internal server error",
-//                     content = @Content)
-//     })
-//     public ResponseEntity<ChatResponse> chat(
-//             @Parameter(description = "AI role for the chat (e.g., doctor, mental_health)", required = true)
-//             @PathVariable String role,
-//             @Parameter(description = "Chat request containing the user's message", required = true)
-//             @RequestBody ChatRequest request) {
-//         log.info("Received chat request for role: {}, message: {}", role, request.getMessage());
-//         return ResponseEntity.ok(ollamaService.chat(role, request.getMessage()));
-//     }
-
-@PostMapping("/chat/{role}")
-public ResponseEntity<ChatResponse> chat(
-        @PathVariable String role,
-        @RequestParam String university,
-        @RequestBody ChatRequest request) {
-    log.info("Received chat request for role: {}, university: {}, message: {}", role, university, request.getMessage());
-    return ResponseEntity.ok(ollamaService.chat(role, request.getMessage(), university));
-}
-// need to modify the apis
-        public ResponseEntity<ChatResponse> chat(
-                @Parameter(description = "AI role for the chat (e.g., doctor, mental_health)", required = true)
-                @PathVariable String role,
-                @Parameter(description = "Selected university name", required = true)
-                @RequestParam String university,
-                @Parameter(description = "Chat request containing the user's message", required = true)
-                @RequestBody ChatRequest request) {
-        log.info("Received chat request for role: {}, message: {}, university: {}", role, request.getMessage(), university);
-        
+    @PostMapping("/chat/{role}")
+    public ResponseEntity<ChatResponse> chat(
+            @PathVariable String role,
+            @RequestParam String university,
+            @RequestBody ChatRequest request) {
+        log.info("Received chat request for role: {}, university: {}, message: {}", role, university, request.getMessage());
         return ResponseEntity.ok(ollamaService.chat(role, request.getMessage(), university));
-        }
+    }
+
+    @PostMapping("/get/{role}")
+    public ResponseEntity<ChatResponse> chat(
+            @PathVariable String role,
+            @RequestBody ChatRequest request) {
+        log.info("Received chat request for role: {}, message: {}", role, request.getMessage());
+        return ResponseEntity.ok(ollamaService.getNews(role, request.getMessage()));
+    }
 }

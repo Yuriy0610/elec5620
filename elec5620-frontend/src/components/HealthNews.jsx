@@ -1,19 +1,21 @@
-import { useEffect, useState } from 'react'; // 删除 React 导入
+import { useEffect, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const HealthNews = () => {
-    const [newsResponse, setNewsResponse] = useState([]); // 存储新闻
-    const [loading, setLoading] = useState(true); // 加载状态
-    const [error, setError] = useState(null); // 错误状态
+    const [newsResponse, setNewsResponse] = useState([]); // Store news
+    const [loading, setLoading] = useState(true); // Loading state
+    const [error, setError] = useState(null); // Error state
 
-    // 页面加载时自动请求新闻
+    // Automatically request health news when the page loads
     useEffect(() => {
         const fetchHealthNews = async () => {
             setLoading(true);
             setError(null);
 
             try {
-                const role = "news_reporter"; // API 角色
-                const response = await fetch(`http://localhost:8080/api/chat/${role}`, {
+                const role = "news_reporter"; // API role
+                const response = await fetch(`http://localhost:8080/api/get/${role}`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -27,20 +29,20 @@ const HealthNews = () => {
 
                 const data = await response.json();
 
-                // 格式化响应内容
+                // Format the response content
                 const formattedResponse = data.response
                     .split('\n')
                     .filter((line) => line.trim() !== '');
 
                 setNewsResponse(formattedResponse);
             } catch (err) {
-                setError(err.message); // 捕获并显示错误信息
+                setError(err.message); // Catch and display error message
             } finally {
-                setLoading(false); // 停止加载状态
+                setLoading(false); // Stop loading state
             }
         };
 
-        fetchHealthNews(); // 执行请求函数并忽略返回的 Promise
+        fetchHealthNews(); // Execute the fetch function
     }, []);
 
     return (
@@ -54,26 +56,34 @@ const HealthNews = () => {
                         Health News 📰
                     </h1>
 
+                    {/* Loading Message with slight yellow background */}
                     {loading && (
-                        <p className="text-center text-lg font-medium text-gray-700">
+                        <p className="text-center text-lg font-medium text-gray-700 bg-yellow-200 p-4 rounded-md">
                             Loading health news...
                         </p>
                     )}
 
+                    {/* Error Message */}
                     {error && (
                         <p className="text-center text-red-600 font-semibold">
                             Error: {error}
                         </p>
                     )}
 
+                    {/* Render News */}
                     {newsResponse.length > 0 && (
                         <div className="space-y-6">
                             {newsResponse.map((line, index) => (
                                 <div
                                     key={index}
-                                    className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+                                    className={`p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 ${
+                                        index % 2 === 0 ? 'bg-blue-100' : 'bg-green-100'
+                                    }`} // Alternate background colors
                                 >
-                                    <p className="text-lg text-gray-800">{line}</p>
+                                    {/* Render Markdown content */}
+                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                        {line}
+                                    </ReactMarkdown>
                                 </div>
                             ))}
                         </div>
