@@ -25,9 +25,11 @@ public class OllamaService {
 
     private final Map<String, String> rolePrompts = new HashMap<>() {{
         put("doctor", "You are a campus doctor. Analyze the symptoms raised by students from ");
-        put("mental_health", "You are a university psychologist. Provide mental health suggestions to students from ");
+        put("mental_health", "You are a university psychologist. Provide mental health suggestions to students based on");
         put("news_reporter", "You are a health news reporter, broadcasting relevant health news for students from ");
         put("health_support_quick_links", "Thanks for dropping by! Here are the links you are looking for from ");
+        // put("symptom_checker", "Thanks for dropping by! Here are the links you are looking for from ");
+
     }};
 
     public OllamaService(RestTemplate restTemplate, ObjectMapper objectMapper) {
@@ -83,6 +85,20 @@ public class OllamaService {
 
         if ("news_reporter".equals(role)) {
             prompt = "What are some most recent health alerts and care tips in Australia? Also specify the name and links to the sources for each of the news and health care tips.";
+
+        } else {
+            prompt = rolePrompts.getOrDefault(role, "You are a helpful assistant for ") + message;
+        }
+
+        if ("mental_health".equals(role)) {
+            prompt = rolePrompts.get(role) + " " + message;
+
+        } else {
+            prompt = rolePrompts.getOrDefault(role, "You are a helpful assistant for ") + message;
+        }
+
+        if ("doctor".equals(role)) {
+            prompt = rolePrompts.get(role) + " " + message;
 
         } else {
             prompt = rolePrompts.getOrDefault(role, "You are a helpful assistant for ") + message;

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const MentalHealthSupport = () => {
   const [userInput, setUserInput] = useState('');
   const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showResponse, setShowResponse] = useState(false); // To control the form and response visibility
+  const [showResponse, setShowResponse] = useState(false); // To control form and response visibility
 
   const handleInputChange = (e) => {
     setUserInput(e.target.value);
@@ -16,7 +18,7 @@ const MentalHealthSupport = () => {
 
     // Call your AI API service here
     try {
-      const res = await fetch('http://localhost:8080/api/chat/doctor', {
+      const res = await fetch('http://localhost:8080/api/get/doctor', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -45,10 +47,13 @@ const MentalHealthSupport = () => {
         {showResponse ? (
           // Display AI response after form submission
           <div>
-            <h1 className="text-4xl font-bold text-orange-800 mb-8">Mental Health Support</h1> {/* Increased font size and margin */}
+            <h1 className="text-4xl font-bold text-orange-800 mb-8">Your One-Stop Mental Health Support!</h1> {/* Increased font size and margin */}
+            
             <div className="bg-gray-100 p-8 rounded-lg shadow-sm"> {/* Increased padding */}
-              <h3 className="text-2xl font-semibold text-orange-800 mb-4">Support Response:</h3> {/* Increased font size */}
-              <p className="text-gray-800">{response}</p>
+              <h3 className="text-2xl font-semibold text-orange-800 mb-4">I hear you! 😊</h3> {/* Added smile icon */}
+              <ReactMarkdown className="text-gray-800" remarkPlugins={[remarkGfm]}>
+                {response}
+              </ReactMarkdown>
             </div>
           </div>
         ) : (
@@ -56,7 +61,7 @@ const MentalHealthSupport = () => {
           <>
             <h1 className="text-4xl font-bold text-orange-800 mb-8">Mental Health Support</h1> {/* Increased font size and margin */}
             <p className="text-lg text-gray-700 mb-8"> {/* Increased font size and margin */}
-              Welcome to U-Well’s mental health support service. Here, you can talk about how you feel, and receive helpful advice on stress management and emotional well-being.
+              Welcome to U-Well’s mental health support service. Here, you can talk about how you feel and receive helpful advice on stress management and emotional well-being.
             </p>
 
             <form onSubmit={handleSubmit} className="mb-8"> {/* Increased margin */}
