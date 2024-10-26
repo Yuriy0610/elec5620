@@ -80,21 +80,28 @@ const ChatWithAi = () => {
         }
     };
 
-    const handleConfirm = () => {
+    const handleConfirm = async () => {
         if (!selectedDate || !selectedTimeSlot || !appointmentTitle) {
             setError("Please select a date, a time slot, and provide a title for the appointment.");
             return;
         }
 
-        setMessages((prevMessages) => [
-            ...prevMessages,
-            {
-                text: `Appointment confirmed with title: "${appointmentTitle}" on ${selectedDate}, time slot: ${selectedTimeSlot}`,
-                isUser: false,
-            },
-        ]);
+        const appointmentStatus = await saveAppointment(); // Check if the appointment was saved successfully
 
-        saveAppointment(); // Save the appointment to the backend
+        if (appointmentStatus) {
+            setMessages((prevMessages) => [
+                ...prevMessages,
+                {
+                    text: `Appointment confirmed with title: "${appointmentTitle}" on ${selectedDate}, time slot: ${selectedTimeSlot}`,
+                    isUser: false,
+                },
+            ]);
+        } else {
+            setMessages((prevMessages) => [
+                ...prevMessages,
+                { text: "Oh no! Time slot not available, please choose another appointment.", isUser: false },
+            ]);
+        }
 
         setShowTimePicker(false);
         setSelectedDate("");
@@ -103,40 +110,10 @@ const ChatWithAi = () => {
         setError("");
     };
 
-    // const saveAppointment = async () => {
-    //     if (!user) {
-    //         console.error("No user is logged in.");
-    //         return;
-    //     }
-    
-    //     try {
-    //         // Make sure to replace '1' with the actual user ID if necessary
-    //         const response = await fetch(`http://localhost:8080/api/appointments/create/${user.id}`, {
-    //             method: "POST",
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //             },
-    //             body: JSON.stringify({
-    //                 title: appointmentTitle,
-    //                 dateTime: `${selectedDate}T${selectedTimeSlot.split('-')[0]}:00`, // Use the selected time slot
-    //             }),
-    //         });
-    
-    //         if (!response.ok) {
-    //             throw new Error(`HTTP error! status: ${response.status}`);
-    //         }
-    
-    //         const data = await response.json();
-    //         console.log("Appointment saved:", data);
-    //     } catch (error) {
-    //         console.error("Error saving appointment:", error);
-    //     }
-    // };
-
     const saveAppointment = async () => {
         if (!user) {
             console.error("No user is logged in.");
-            return;
+            return false; // Return false if user is not logged in
         }
     
         // Prepare the data to be sent
@@ -159,14 +136,13 @@ const ChatWithAi = () => {
             }
     
             const data = await response.json();
-            // alert("Appointment saved: " + JSON.stringify(data)); // Notify user of success
+            console.log("Appointment saved:", data);
+            return true; // Return true if appointment saved successfully
         } catch (error) {
             console.error("Error saving appointment:", error);
+            return false; // Return false if there was an error
         }
     };    
-    
-    
-    
 
     const handleTimeSlotClick = (timeSlot) => {
         setSelectedTimeSlot(timeSlot);
