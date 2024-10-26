@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Send } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useUser } from './UserContext'; // Import the user context
 
 const ChatMessage = ({ message, isUser }) => {
     const bubbleStyle = isUser
@@ -20,6 +21,7 @@ const ChatMessage = ({ message, isUser }) => {
 };
 
 const ChatWithAi = () => {
+    const { user } = useUser(); // Access the user context
     const [messages, setMessages] = useState([
         { text: "Hello! How can I help you today?", isUser: false },
     ]);
@@ -28,7 +30,7 @@ const ChatWithAi = () => {
     const [showTimePicker, setShowTimePicker] = useState(false);
     const [selectedDate, setSelectedDate] = useState("");
     const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
-    const [appointmentTitle, setAppointmentTitle] = useState(""); // New: State for appointment title
+    const [appointmentTitle, setAppointmentTitle] = useState("");
     const [error, setError] = useState("");
 
     const sendMessage = async (e) => {
@@ -46,7 +48,7 @@ const ChatWithAi = () => {
             }
 
             setInput("");
-            setLoading(true); // Show loading animation
+            setLoading(true);
             try {
                 const role = "doctor";
                 const response = await fetch(`http://localhost:8080/api/get/${role}`, {
@@ -73,7 +75,7 @@ const ChatWithAi = () => {
                     { text: "Error: Unable to get a response from the server.", isUser: false },
                 ]);
             } finally {
-                setLoading(false); // Hide loading animation after response
+                setLoading(false);
             }
         }
     };
@@ -83,7 +85,7 @@ const ChatWithAi = () => {
             setError("Please select a date, a time slot, and provide a title for the appointment.");
             return;
         }
-    
+
         setMessages((prevMessages) => [
             ...prevMessages,
             {
@@ -91,30 +93,68 @@ const ChatWithAi = () => {
                 isUser: false,
             },
         ]);
-    
+
         saveAppointment(); // Save the appointment to the backend
-    
+
         setShowTimePicker(false);
         setSelectedDate("");
         setSelectedTimeSlot("");
         setAppointmentTitle("");
         setError("");
     };
+
+    // const saveAppointment = async () => {
+    //     if (!user) {
+    //         console.error("No user is logged in.");
+    //         return;
+    //     }
     
+    //     try {
+    //         // Make sure to replace '1' with the actual user ID if necessary
+    //         const response = await fetch(`http://localhost:8080/api/appointments/create/${user.id}`, {
+    //             method: "POST",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //             },
+    //             body: JSON.stringify({
+    //                 title: appointmentTitle,
+    //                 dateTime: `${selectedDate}T${selectedTimeSlot.split('-')[0]}:00`, // Use the selected time slot
+    //             }),
+    //         });
+    
+    //         if (!response.ok) {
+    //             throw new Error(`HTTP error! status: ${response.status}`);
+    //         }
+    
+    //         const data = await response.json();
+    //         console.log("Appointment saved:", data);
+    //     } catch (error) {
+    //         console.error("Error saving appointment:", error);
+    //     }
+    // };
 
     const saveAppointment = async () => {
+        if (!user) {
+            console.error("No user is logged in.");
+            return;
+        }
+    
+        // Prepare the data to be sent
+        const appointmentData = {
+            title: appointmentTitle,
+            dateTime: `${selectedDate}T${selectedTimeSlot.split('-')[0]}:00`,
+        };
+    
+        // Alert to check if the values are correct
+        alert(`Title: ${appointmentData.title}\nDateTime: ${appointmentData.dateTime}`);
+    
         try {
-            const response = await fetch("http://localhost:8080/api/appointments", {
+            const response = await fetch(`http://localhost:8080/api/appointments/create/${user.id}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
-                    userId: currentUser.id, // Replace currentUser.id with the logged-in user's ID
-                    title: appointmentTitle,
-                    date: selectedDate,
-                    timeSlot: selectedTimeSlot,
-                }),
+                body: JSON.stringify(appointmentData),
             });
     
             if (!response.ok) {
@@ -127,6 +167,8 @@ const ChatWithAi = () => {
             console.error("Error saving appointment:", error);
         }
     };
+    
+    
     
 
     const handleTimeSlotClick = (timeSlot) => {

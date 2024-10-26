@@ -68,4 +68,17 @@ public class User {
         this.role = role;
     }
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+private List<Appointment> appointments = new ArrayList<>();
+
+// Getter and Setter for appointments
+public List<Appointment> getAppointments() {
+    return appointments;
+}
+
+public void setAppointments(List<Appointment> appointments) {
+    this.appointments = appointments;
+}
+
+
 }
