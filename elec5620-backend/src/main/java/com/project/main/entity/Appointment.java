@@ -1,10 +1,7 @@
 package com.project.main.entity;
 
 import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "appointments", uniqueConstraints = {
@@ -19,16 +16,15 @@ public class Appointment {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false, columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime dateTime;
+    @Column(name = "date_time", nullable = false)
+    private String dateTime; // Keeping it as a String
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
     // Getters and Setters
-
     public Long getId() {
         return id;
     }
@@ -45,13 +41,12 @@ public class Appointment {
         this.title = title;
     }
 
-    public LocalDateTime getDateTime() {
+    public String getDateTime() {
         return dateTime;
     }
 
-    // Custom setter for deserialization
     public void setDateTime(String dateTime) {
-        this.dateTime = LocalDateTime.parse(dateTime, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        this.dateTime = dateTime; // Set the string directly
     }
 
     public User getUser() {

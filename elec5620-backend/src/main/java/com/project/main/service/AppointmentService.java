@@ -23,7 +23,7 @@ public class AppointmentService {
         User user = userRepository.findById(userId).orElseThrow(() -> new Exception("User not found"));
         appointment.setUser(user);
         return appointmentRepository.save(appointment);
-    }
+    }    
 
     public List<Appointment> getAppointmentsByUserId(Long userId) {
         return appointmentRepository.findByUserId(userId);

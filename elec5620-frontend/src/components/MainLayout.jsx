@@ -50,7 +50,7 @@ const MainLayout = () => {
                         { icon: ListChecks, text: 'Symptom Checker', to: '/main-layout/symptom-checker' },
                         { icon: SmilePlus, text: 'Mental Health', to: '/main-layout/mentalhealth' },
                         { icon: MessageSquare, text: 'Chat with AI', to: '/main-layout/chat-ai' },
-                        { icon: CircleCheckBig, text: 'Appointment', to: '/main-layout/appointment' },
+                        { icon: CircleCheckBig, text: 'Appointments', to: '/main-layout/user-appointments' },
                         { icon: MessageCircle, text: 'Contact', to: '/main-layout/contact' },
                     ].map(({ icon: Icon, text, to }) => (
                         <Link

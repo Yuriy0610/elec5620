@@ -3,6 +3,7 @@ package com.project.main.entity;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "users")
@@ -23,6 +24,10 @@ public class User {
 
     @Column(nullable = false)
     private String role;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Appointment> appointments = new ArrayList<>();
 
     
 
@@ -68,10 +73,9 @@ public class User {
         this.role = role;
     }
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-private List<Appointment> appointments = new ArrayList<>();
 
 // Getter and Setter for appointments
+
 public List<Appointment> getAppointments() {
     return appointments;
 }

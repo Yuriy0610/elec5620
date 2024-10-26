@@ -12,7 +12,8 @@ import AiResponseSymptomChecker from './components/AiResponse_symptomchecker';
 import HealthNews from './components/HealthNews';
 import Home from './components/Home';
 import UserInfo from './components/UserInfo';
-import {UserProvider } from './components/UserContext';
+import UserAppointments from './components/Appointment'; // Importing UserAppointments
+import { UserProvider } from './components/UserContext';
 import Introduction from './components/Introduction';
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
                         <Route path="healthnews" element={<HealthNews />} />
                         <Route path="home" element={<Home />} />
                         <Route path="user-info" element={<UserInfo />} />
+                        <Route path="user-appointments" element={<UserAppointments />} /> {/* New route for UserAppointments */}
                     </Route>
 
                     {/* Redirect to login if path is root */}
@@ -45,6 +47,5 @@ function App() {
         </UserProvider>
     );
 }
-
 
 export default App;

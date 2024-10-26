@@ -142,11 +142,8 @@ const ChatWithAi = () => {
         // Prepare the data to be sent
         const appointmentData = {
             title: appointmentTitle,
-            dateTime: `${selectedDate}T${selectedTimeSlot.split('-')[0]}:00`,
+            dateTime: `${selectedDate}T${selectedTimeSlot.split('-')[0]}:00`, // Ensure this matches your backend format
         };
-    
-        // Alert to check if the values are correct
-        alert(`Title: ${appointmentData.title}\nDateTime: ${appointmentData.dateTime}`);
     
         try {
             const response = await fetch(`http://localhost:8080/api/appointments/create/${user.id}`, {
@@ -162,11 +159,11 @@ const ChatWithAi = () => {
             }
     
             const data = await response.json();
-            console.log("Appointment saved:", data);
+            // alert("Appointment saved: " + JSON.stringify(data)); // Notify user of success
         } catch (error) {
             console.error("Error saving appointment:", error);
         }
-    };
+    };    
     
     
     

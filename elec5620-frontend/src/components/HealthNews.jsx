@@ -59,8 +59,8 @@ const HealthNews = () => {
 
     return (
         <div
-            className="min-h-screen bg-gradient-to-br from-blue-200 to-indigo-400 p-10"
-            style={{ backgroundImage: `url('https://via.placeholder.com/1920x1080')`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+            className="min-h-screen bg-gradient-to-br from-orange-200 to-orange-400 p-10"
+            // style={{ backgroundImage: `url('https://via.placeholder.com/1920x1080')`, backgroundSize: 'cover', backgroundPosition: 'center' }}
         >
             <div className="max-w-4xl mx-auto bg-white/80 backdrop-blur-md shadow-xl rounded-lg overflow-hidden">
                 <div className="p-8">
