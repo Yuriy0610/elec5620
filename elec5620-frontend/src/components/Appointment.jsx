@@ -14,7 +14,7 @@ const Appointment = () => {
     const navigate = useNavigate();
 
     const hospitals = ['Hospital A', 'Hospital B', 'Hospital C'];
-    const departments = ['Cardiology', 'Neurology', 'Orthopedics'];
+    const departments = ['Psychology', 'General Medicine', 'Cardiology','Neurology','Dermatology','Orthopedics','Ophthalmology','Otolaryngology'];
     const timeSlots = [
         '8:00-9:00',
         '9:00-10:00',
@@ -36,7 +36,7 @@ const Appointment = () => {
             return;
         }
         setEmailError('');
-        navigate('/confirmation', {
+        navigate('/main-layout/confirmation', {
             state: {
                 name,
                 email,
