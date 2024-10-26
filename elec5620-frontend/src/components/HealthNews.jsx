@@ -6,44 +6,49 @@ const HealthNews = () => {
     const [newsResponse, setNewsResponse] = useState([]); // Store news
     const [loading, setLoading] = useState(true); // Loading state
     const [error, setError] = useState(null); // Error state
+    const [category, setCategory] = useState("General"); // Default category
 
-    // Automatically request health news when the page loads
-    useEffect(() => {
-        const fetchHealthNews = async () => {
-            setLoading(true);
-            setError(null);
+    // Define available categories
+    const categories = ["General", "Mental Health", "Nutrition", "Fitness", "Medical Research", "Public Health"];
 
-            try {
-                const role = "news_reporter"; // API role
-                const response = await fetch(`http://localhost:8080/api/get/${role}`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ message: "Give me the latest health news." }),
-                });
+    // Function to fetch health news based on category
+    const fetchHealthNews = async (selectedCategory) => {
+        setLoading(true);
+        setError(null);
 
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
+        try {
+            const role = "news_reporter"; // API role
+            const response = await fetch(`http://localhost:8080/api/get/${role}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ message: `Give me the latest ${selectedCategory.toLowerCase()} news.` }),
+            });
 
-                const data = await response.json();
-
-                // Format the response content
-                const formattedResponse = data.response
-                    .split('\n')
-                    .filter((line) => line.trim() !== '');
-
-                setNewsResponse(formattedResponse);
-            } catch (err) {
-                setError(err.message); // Catch and display error message
-            } finally {
-                setLoading(false); // Stop loading state
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
             }
-        };
 
-        fetchHealthNews(); // Execute the fetch function
-    }, []);
+            const data = await response.json();
+
+            // Format the response content
+            const formattedResponse = data.response
+                .split('\n')
+                .filter((line) => line.trim() !== '');
+
+            setNewsResponse(formattedResponse);
+        } catch (err) {
+            setError(err.message); // Catch and display error message
+        } finally {
+            setLoading(false); // Stop loading state
+        }
+    };
+
+    // Fetch default category news on page load
+    useEffect(() => {
+        fetchHealthNews(category);
+    }, [category]);
 
     // Helper function to determine the type of line
     const getColorClass = (line) => {
@@ -58,20 +63,30 @@ const HealthNews = () => {
     };
 
     return (
-        <div
-            className="min-h-screen bg-gradient-to-br from-orange-200 to-orange-400 p-10"
-            // style={{ backgroundImage: `url('https://via.placeholder.com/1920x1080')`, backgroundSize: 'cover', backgroundPosition: 'center' }}
-        >
+        <div className="min-h-screen bg-gradient-to-br from-orange-200 to-orange-400 p-10">
             <div className="max-w-4xl mx-auto bg-white/80 backdrop-blur-md shadow-xl rounded-lg overflow-hidden">
                 <div className="p-8">
                     <h1 className="text-4xl font-bold text-center mb-6 text-indigo-900">
                         Health News 📰
                     </h1>
 
+                    {/* Category Selector */}
+                    <div className="flex justify-center space-x-4 mb-6">
+                        {categories.map((cat) => (
+                            <button
+                                key={cat}
+                                onClick={() => setCategory(cat)}
+                                className={`py-2 px-4 rounded-full text-white ${category === cat ? 'bg-indigo-700' : 'bg-indigo-400'} hover:bg-indigo-600 transition`}
+                            >
+                                {cat}
+                            </button>
+                        ))}
+                    </div>
+
                     {/* Loading Message with slight yellow background */}
                     {loading && (
                         <p className="text-center text-lg font-medium text-gray-700 bg-yellow-200 p-4 rounded-md">
-                            Loading health news...
+                            Loading {category} news...
                         </p>
                     )}
 
