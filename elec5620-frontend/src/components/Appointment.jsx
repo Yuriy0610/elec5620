@@ -1,6 +1,4 @@
-// src/components/UserAppointments.jsx
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useUser } from './UserContext';
 
 const UserAppointments = () => {
@@ -13,31 +11,28 @@ const UserAppointments = () => {
         const fetchAppointments = async () => {
             if (!user || !user.id) {
                 setLoading(false);
-                return; // Exit if no user is logged in
+                return;
             }
-    
+
             try {
-                const response = await axios.get(`/api/appointments/${user.id}`);
-                console.log(response.data); // Log to confirm the structure
-    
-                // Update this to handle either an array directly or an object containing the array
-                if (Array.isArray(response.data)) {
-                    setAppointments(response.data);
-                } else if (Array.isArray(response.data.appointments)) {
-                    setAppointments(response.data.appointments);
+                const response = await fetch(`/api/appointments/user/${user.id}`);
+                const data = await response.json();
+
+                if (Array.isArray(data)) {
+                    setAppointments(data);
                 } else {
-                    setAppointments([]); // Set to an empty array if appointments not found
+                    setAppointments([]);
                 }
             } catch (err) {
                 setError('Failed to fetch appointments');
-                console.error(err);
+                console.error("Error fetching appointments:", err);
             } finally {
                 setLoading(false);
             }
         };
-    
+
         fetchAppointments();
-    }, [user]);    
+    }, [user]);
 
     if (loading) {
         return <div>Loading appointments...</div>;
@@ -52,15 +47,27 @@ const UserAppointments = () => {
             <h2 className="text-xl font-semibold mb-4">Your Appointments</h2>
             
             {appointments.length > 0 ? (
-                <ul className="space-y-4">
-                    {appointments.map((appointment) => (
-                        <li key={appointment.id} className="border-b pb-2">
-                            <h3 className="text-lg font-medium">{appointment.title}</h3>
-                            <p>{new Date(appointment.dateTime).toLocaleString()}</p>
-                            <p>{appointment.description}</p>
-                        </li>
-                    ))}
-                </ul>
+                <table className="min-w-full">
+                    <thead>
+                        <tr className="border-b">
+                            <th className="px-4 py-2 text-left">Appointment</th>
+                            <th className="px-4 py-2 text-left">Date & Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {appointments.map((appointment) => {
+                            // Remove 'T' from dateTime string for display
+                            const formattedDateTime = appointment.dateTime.replace('T', ' ');
+
+                            return (
+                                <tr key={appointment.id} className="border-b">
+                                    <td className="px-4 py-2">{appointment.title}</td>
+                                    <td className="px-4 py-2">{formattedDateTime}</td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
             ) : (
                 <p>No appointments found.</p>
             )}
