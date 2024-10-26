@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useUser } from './UserContext'; // Import the custom hook
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -9,38 +10,36 @@ const Register = () => {
         confirmPassword: '',
         role: '',
     });
-
-    const [errorMessage, setErrorMessage] = useState(''); // State for error messages
+    const { setUser } = useUser(); // Use setUser from context
+    const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
-        setErrorMessage(''); // Clear error message on input change
+        setErrorMessage('');
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-    
-        // Validation here (e.g., password match check)
+
         if (formData.password !== formData.confirmPassword) {
             alert('Passwords do not match');
             return;
         }
-    
-        // Check if role is selected
+
         if (formData.role === '') {
             alert('Please select a role');
             return;
         }
-    
+
         const user = {
             username: formData.fullName,
             email: formData.email,
             password: formData.password,
             role: formData.role,
         };
-    
+
         fetch('http://localhost:8080/api/users/register', {
             method: 'POST',
             headers: {
@@ -51,18 +50,18 @@ const Register = () => {
             .then((response) => {
                 if (!response.ok) {
                     return response.json().then((errorData) => {
-                        throw new Error(errorData.error); // Access the error message from JSON
+                        throw new Error(errorData.error);
                     });
                 }
                 return response.json();
             })
             .then((data) => {
-                console.log('User  created successfully:', data);
-                navigate('/login');
+                setUser({ username: formData.fullName }); // Save user data in context
+                navigate('/main-layout/home'); // Redirect after registration
             })
             .catch((error) => {
                 console.error('Error:', error);
-                setErrorMessage(error.message); // Set error message to state
+                setErrorMessage(error.message);
             });
     };
 
@@ -70,7 +69,7 @@ const Register = () => {
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
             <div className="p-6 bg-white rounded shadow-md">
                 <h2 className="text-2xl font-bold mb-4 text-center text-orange-600">Register</h2>
-                {errorMessage && <div className="mb-4 text-red-500">{errorMessage}</div>} {/* Display error message */}
+                {errorMessage && <div className="mb-4 text-red-500">{errorMessage}</div>}
                 <form onSubmit={handleSubmit}>
                     <input
                         className="w-full p-2 mb-4 border rounded"
@@ -114,7 +113,7 @@ const Register = () => {
                     >
                         <option value="" disabled className="text-gray-400">Please select your registration identity</option>
                         <option value="student" className="text-black">Student</option>
-                        <option value="gp" className=" text-black">GP</option>
+                        <option value="gp" className="text-black">GP</option>
                     </select>
 
                     <button type="submit" className="w-full p-2 text-white rounded bg-orange-600 hover:bg-orange-700">

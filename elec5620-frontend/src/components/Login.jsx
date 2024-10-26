@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useUser } from './UserContext'; // Import the useUser hook
 
 const Login = () => {
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-    });
-    const [error, setError] = useState(null); // To store error messages
-
+    const [formData, setFormData] = useState({ email: '', password: '' });
+    const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const { setUser } = useUser(); // Access setUser from context
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -17,34 +15,32 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError(null); // Reset error message
-
+        setError(null);
+    
         try {
-            // Send login request to the backend
-            const response = await fetch('http://localhost:8080/api/users/login', { 
+            const response = await fetch('http://localhost:8080/api/users/login', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
             });
-            
-
+    
             if (!response.ok) {
                 const message = await response.text();
-                throw new Error(message); // Throw error to handle it in catch block
+                throw new Error(message);
             }
-
+    
             const user = await response.json();
-            console.log('Logged in successfully:', user);
+            setUser(user); // Set the logged-in user in context
+            console.log('Current User:', user);
 
-            // Redirect to the main layout (chat room) on successful login
             navigate('/main-layout');
         } catch (error) {
-            setError(error.message); // Set error message to be displayed
+            setError(error.message);
             console.error('Login failed:', error);
         }
     };
+    
+
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
