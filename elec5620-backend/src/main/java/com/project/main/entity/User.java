@@ -1,6 +1,8 @@
 package com.project.main.entity;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -19,8 +21,11 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)  // Add this field
+    @Column(nullable = false)
     private String role;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Appointment> appointments = new ArrayList<>();
 
     // Getters and Setters
 
@@ -56,11 +61,29 @@ public class User {
         this.password = password;
     }
 
-    public String getRole() {  // Getter for role
+    public String getRole() {
         return role;
     }
 
-    public void setRole(String role) {  // Setter for role
+    public void setRole(String role) {
         this.role = role;
+    }
+
+    public List<Appointment> getAppointments() {
+        return appointments;
+    }
+
+    public void setAppointments(List<Appointment> appointments) {
+        this.appointments = appointments;
+    }
+
+    public void addAppointment(Appointment appointment) {
+        appointments.add(appointment);
+        appointment.setUser(this);
+    }
+
+    public void removeAppointment(Appointment appointment) {
+        appointments.remove(appointment);
+        appointment.setUser(null);
     }
 }

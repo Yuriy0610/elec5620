@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 import { Send } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const ChatMessage = ({ message, isUser }) => {
     const bubbleStyle = isUser
-        ? `bg-blue-500 text-white justify-end`  // 用户消息样式
-        : `bg-gray-300 text-black justify-start`;  // AI 消息样式
+        ? `bg-blue-500 text-white justify-end`
+        : `bg-gray-300 text-black justify-start`;
 
     return (
         <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} my-1`}>
             <div className={`max-w-xs mx-2 p-2 rounded-lg ${bubbleStyle}`}>
-                {message}
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {message}
+                </ReactMarkdown>
             </div>
         </div>
     );
@@ -21,20 +25,20 @@ const ChatWithAi = () => {
     ]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
-    const [showTimePicker, setShowTimePicker] = useState(false); // 新增：控制时间选择窗口显示
-    const [selectedDate, setSelectedDate] = useState(""); // 新增：选择的日期
-    const [selectedTimeSlot, setSelectedTimeSlot] = useState(""); // 新增：选择的时间
-    const [error, setError] = useState(""); // 新增：错误信息
+    const [showTimePicker, setShowTimePicker] = useState(false);
+    const [selectedDate, setSelectedDate] = useState("");
+    const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
+    const [appointmentTitle, setAppointmentTitle] = useState(""); // New: State for appointment title
+    const [error, setError] = useState("");
 
     const sendMessage = async (e) => {
         e.preventDefault();
         if (input.trim()) {
             setMessages((prevMessages) => [
                 ...prevMessages,
-                { text: input, isUser: true },  // 用户消息
+                { text: input, isUser: true },
             ]);
 
-            // 检测是否是预约关键词
             if (input.toLowerCase().includes("appointment") || input.toLowerCase().includes("reservation")) {
                 setShowTimePicker(true);
                 setInput("");
@@ -42,10 +46,10 @@ const ChatWithAi = () => {
             }
 
             setInput("");
-
+            setLoading(true); // Show loading animation
             try {
                 const role = "doctor";
-                const response = await fetch(`http://localhost:8080/api/chat/${role}`, {
+                const response = await fetch(`http://localhost:8080/api/get/${role}`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -60,7 +64,7 @@ const ChatWithAi = () => {
                 const data = await response.json();
                 setMessages((prevMessages) => [
                     ...prevMessages,
-                    { text: data.response, isUser: false },  // AI 回复
+                    { text: data.response, isUser: false },
                 ]);
             } catch (error) {
                 console.error("Error sending message:", error);
@@ -68,26 +72,62 @@ const ChatWithAi = () => {
                     ...prevMessages,
                     { text: "Error: Unable to get a response from the server.", isUser: false },
                 ]);
+            } finally {
+                setLoading(false); // Hide loading animation after response
             }
         }
     };
 
-    // 确认时间选择
     const handleConfirm = () => {
-        if (!selectedDate || !selectedTimeSlot) {
-            setError("Please select both a date and a time slot.");
+        if (!selectedDate || !selectedTimeSlot || !appointmentTitle) {
+            setError("Please select a date, a time slot, and provide a title for the appointment.");
             return;
         }
-
+    
         setMessages((prevMessages) => [
             ...prevMessages,
-            { text: `Appointment confirmed for date: ${selectedDate}, time slot: ${selectedTimeSlot}`, isUser: false },
+            {
+                text: `Appointment confirmed with title: "${appointmentTitle}" on ${selectedDate}, time slot: ${selectedTimeSlot}`,
+                isUser: false,
+            },
         ]);
+    
+        saveAppointment(); // Save the appointment to the backend
+    
         setShowTimePicker(false);
         setSelectedDate("");
         setSelectedTimeSlot("");
+        setAppointmentTitle("");
         setError("");
     };
+    
+
+    const saveAppointment = async () => {
+        try {
+            const response = await fetch("http://localhost:8080/api/appointments", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    userId: currentUser.id, // Replace currentUser.id with the logged-in user's ID
+                    title: appointmentTitle,
+                    date: selectedDate,
+                    timeSlot: selectedTimeSlot,
+                }),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+    
+            const data = await response.json();
+            console.log("Appointment saved:", data);
+        } catch (error) {
+            console.error("Error saving appointment:", error);
+        }
+    };
+    
 
     const handleTimeSlotClick = (timeSlot) => {
         setSelectedTimeSlot(timeSlot);
@@ -105,11 +145,19 @@ const ChatWithAi = () => {
                 {messages.map((msg, index) => (
                     <ChatMessage key={index} message={msg.text} isUser={msg.isUser} />
                 ))}
+                {loading && <div className="text-center text-gray-500">Loading...</div>}
             </div>
 
             {showTimePicker && (
                 <div className="p-4 bg-white border-t">
                     <h2 className="text-lg font-semibold">Select Appointment Time</h2>
+                    <input
+                        type="text"
+                        value={appointmentTitle}
+                        onChange={(e) => setAppointmentTitle(e.target.value)}
+                        placeholder="Enter Appointment Title"
+                        className="border rounded p-2 mt-2 w-full"
+                    />
                     <input
                         type="date"
                         value={selectedDate}
