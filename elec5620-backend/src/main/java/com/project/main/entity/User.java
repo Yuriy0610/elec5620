@@ -24,8 +24,7 @@ public class User {
     @Column(nullable = false)
     private String role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Appointment> appointments = new ArrayList<>();
+    
 
     // Getters and Setters
 
@@ -69,21 +68,4 @@ public class User {
         this.role = role;
     }
 
-    public List<Appointment> getAppointments() {
-        return appointments;
-    }
-
-    public void setAppointments(List<Appointment> appointments) {
-        this.appointments = appointments;
-    }
-
-    public void addAppointment(Appointment appointment) {
-        appointments.add(appointment);
-        appointment.setUser(this);
-    }
-
-    public void removeAppointment(Appointment appointment) {
-        appointments.remove(appointment);
-        appointment.setUser(null);
-    }
 }

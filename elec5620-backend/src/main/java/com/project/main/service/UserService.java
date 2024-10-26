@@ -1,8 +1,6 @@
 package com.project.main.service;
 
-import com.project.main.entity.Appointment;
 import com.project.main.entity.User;
-import com.project.main.repository.AppointmentRepository;
 import com.project.main.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,9 +13,6 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private AppointmentRepository appointmentRepository;
 
     public User registerUser(User user) throws Exception {
         Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
@@ -38,14 +33,4 @@ public class UserService {
         return user.get();
     }
 
-    public Appointment addAppointmentForUser(Long userId, Appointment appointment) throws Exception {
-        User user = userRepository.findById(userId).orElseThrow(() -> new Exception("User not found."));
-        user.addAppointment(appointment);
-        appointment.setUser(user);
-        return appointmentRepository.save(appointment);
-    }
-
-    public List<Appointment> getAppointmentsForUser(Long userId) throws Exception {
-        return appointmentRepository.findByUserId(userId);
-    }
 }

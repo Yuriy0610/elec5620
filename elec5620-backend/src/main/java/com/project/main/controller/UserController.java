@@ -1,6 +1,5 @@
 package com.project.main.controller;
 
-import com.project.main.entity.Appointment;
 import com.project.main.entity.User;
 import com.project.main.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,23 +38,4 @@ public class UserController {
         }
     }
 
-    @PostMapping("/{userId}/appointments")
-    public ResponseEntity<?> addAppointment(@PathVariable Long userId, @RequestBody Appointment appointment) {
-        try {
-            Appointment newAppointment = userService.addAppointmentForUser(userId, appointment);
-            return ResponseEntity.ok(newAppointment);
-        } catch (Exception e) {
-            return ResponseEntity.status(404).body(e.getMessage());
-        }
-    }
-
-    @GetMapping("/{userId}/appointments")
-    public ResponseEntity<?> getAppointments(@PathVariable Long userId) {
-        try {
-            List<Appointment> appointments = userService.getAppointmentsForUser(userId);
-            return ResponseEntity.ok(appointments);
-        } catch (Exception e) {
-            return ResponseEntity.status(404).body(e.getMessage());
-        }
-    }
 }
