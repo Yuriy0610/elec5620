@@ -5,7 +5,7 @@ import remarkGfm from 'remark-gfm';
 import { useUser } from './UserContext'; // Import the user context
 
 const ChatMessage = ({ message, isUser }) => {
-    const bubbleStyle = isUser
+    const bubbleStyle = isUser 
         ? `bg-orange-100 text-black justify-end`
         : `bg-orange-200 text-black justify-start`;
 
@@ -47,6 +47,11 @@ const ChatWithAi = () => {
                 return;
             }
 
+            // Save the chat message to the database
+            if (user) {
+                await saveChatMessage(input); // Call the function to save chat
+            }
+
             setInput("");
             setLoading(true);
             try {
@@ -77,6 +82,32 @@ const ChatWithAi = () => {
             } finally {
                 setLoading(false);
             }
+        }
+    };
+
+    const saveChatMessage = async (message) => {
+        if (!user) {
+            console.error("No user is logged in.");
+            return; // Exit if no user is logged in
+        }
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/chats/create/${user.id}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ chat: message }), // Send the chat message
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log("Chat message saved:", data);
+        } catch (error) {
+            console.error("Error saving chat message:", error);
         }
     };
 
@@ -115,13 +146,13 @@ const ChatWithAi = () => {
             console.error("No user is logged in.");
             return false; // Return false if user is not logged in
         }
-    
+
         // Prepare the data to be sent
         const appointmentData = {
             title: appointmentTitle,
             dateTime: `${selectedDate}T${selectedTimeSlot.split('-')[0]}:00`, // Ensure this matches your backend format
         };
-    
+
         try {
             const response = await fetch(`http://localhost:8080/api/appointments/create/${user.id}`, {
                 method: "POST",
@@ -130,11 +161,11 @@ const ChatWithAi = () => {
                 },
                 body: JSON.stringify(appointmentData),
             });
-    
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-    
+
             const data = await response.json();
             console.log("Appointment saved:", data);
             return true; // Return true if appointment saved successfully
@@ -142,7 +173,7 @@ const ChatWithAi = () => {
             console.error("Error saving appointment:", error);
             return false; // Return false if there was an error
         }
-    };    
+    };
 
     const handleTimeSlotClick = (timeSlot) => {
         setSelectedTimeSlot(timeSlot);
@@ -217,10 +248,10 @@ const ChatWithAi = () => {
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             placeholder="Type your message..."
-                            className="flex-1 p-2 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-orange-400"
+                            className="border rounded p-2 flex-grow"
                         />
-                        <button type="submit" className="bg-orange-600 text-white p-2 rounded-r-lg hover:bg-orange-700">
-                            <Send size={20} />
+                        <button type="submit" className="ml-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                            <Send />
                         </button>
                     </div>
                 </form>

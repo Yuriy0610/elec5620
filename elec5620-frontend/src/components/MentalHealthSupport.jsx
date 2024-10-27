@@ -7,6 +7,7 @@ const MentalHealthSupport = () => {
   const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false);
   const [showResponse, setShowResponse] = useState(false); // To control form and response visibility
+  const userId = 1; // Replace with the actual user ID or retrieve it dynamically
 
   const handleInputChange = (e) => {
     setUserInput(e.target.value);
@@ -33,6 +34,24 @@ const MentalHealthSupport = () => {
       const result = await res.json();
       setResponse(result.response); // Assuming your AI API returns a 'response' field
       setShowResponse(true); // Show the AI's response
+
+      // Second API call to save the chat
+      const saveChatResponse = await fetch(`http://localhost:8080/api/chats/create/${userId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ chat: userInput }), // Save the user input
+      });
+
+      if (!saveChatResponse.ok) {
+        throw new Error('Failed to save chat');
+      }
+
+      // Optionally handle the response from the save chat API if needed
+      const saveChatResult = await saveChatResponse.json();
+      console.log("Chat saved:", saveChatResult);
+
     } catch (error) {
       console.error('Error:', error);
       alert('There was an issue during submission. Please try again later.');
@@ -75,7 +94,7 @@ const MentalHealthSupport = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-6 w-full bg-orange-700 text-white py-4 rounded-lg hover:bg-orange-800 transition-colors duration-200" /* Increased button padding */
+                className="mt-6 w-full bg-orange-700 text-white py-4 rounded-lg hover:bg-orange-800 transition -colors duration-200" /* Increased button padding */
               >
                 {loading ? 'Processing...' : 'Submit'}
               </button>
