@@ -1,36 +1,3 @@
-<!-- 
-# ELEC5620 Group19 Project
-
-This project is ELEC5620 course application.
-
-## Prerequisites
-
-Before you begin, ensure you have met the following requirements:
-
-* [Node.js](https://nodejs.org/) v20.17.0 or later
-* [Java JDK](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html) java 17
-
-## Installation
-
-To install the project dependencies, follow these steps:
-
-1. Clone the repository to your local machine.
-2. Navigate to the frontend folder in your terminal.
-3. Run the following command to install all necessary packages: "npm install"
-
-## Usage
-
-To start the development server, use the following command: "npm run dev"
-This will launch the frontend application on a local development server, typically accessible at `http://localhost:5173`.
-
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
- -->
 # ELEC5620 Group19 Project - U-Well (University Wellness)
 
 ## Overview
@@ -87,6 +54,9 @@ Before you begin, ensure you have met the following requirements:
 
 * [Node.js](https://nodejs.org/) v20.17.0 or later
 * [Java JDK](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html) version 17
+* [PostgreSQL](https://www.postgresql.org/) (stable version must be installed and running in the background)
+* [Gradle](https://gradle.org/) (v8.7)
+* [Ollama](https://ollama.com) (v3.2)
 
 ## Installation
 
@@ -98,15 +68,61 @@ To install the project dependencies, follow these steps:
 
 ## Configuration
 
-To start the development server, use the following command: `npm run dev`. This will launch the frontend application on a local development server, typically accessible at `http://localhost:5173`.
+To start the development server, navigate in the `elec5620-frontend` directory, use the following command: `npm run dev`. This will launch the frontend application on a local development server, typically accessible at `http://localhost:5173`.
 
-### React + Vite
+## React + Vite
 
 This template provides a minimal setup to get React working in Vite with Hot Module Replacement (HMR) and some ESLint rules.
 
 Currently, two official plugins are available:
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh.
+
+## Database Setup
+
+Before starting the backend server, you need to set up the PostgreSQL database:
+
+1. Create a database for the application.
+2. Create a user with permissions to access the database.
+3. Create the necessary tables according to the schema defined in the project.
+
+To set up the PostgreSQL database and user, follow these steps:
+
+1. **Open your terminal**.
+
+2. **Connect to the PostgreSQL command line** as the default user (usually `postgres`) using:
+
+    `psql -U postgres`
+
+    You may need to enter your PostgreSQL password.
+
+3. **Create the database:**
+
+    `CREATE DATABASE elec5620db;`
+
+4. **Create a new user with a password:**
+
+    ```CREATE USER elecuser WITH PASSWORD 'yourpassword';```
+
+
+4. **Grant privileges to the new user on the database:**
+
+    ```GRANT ALL PRIVILEGES ON DATABASE elec5620db TO elecuser;```
+
+5. **Connect to the newly created database:**
+
+    ``` psql -U elecuser -d elec5620db```
+    Enter password: 'yourpassword' to connect.
+
+## Gradle + SprintBoot
+
+
+To start the development server, navigate in the `elec5620-backend` directory, use the following command: `gradle bootRun`. This will launch the frontend application on a local development server, typically accessible at `http://localhost:8080`.
+
+## LLM - Ollama
+
+To start the LLM server, download the ollama version specified above and run following:
+`ollama run llama3.2`
 
 ## Deployment
 
@@ -120,10 +136,10 @@ The project is set up to be deployed using Jenkins. To deploy the application, f
 
 ### Application Frameworks
 
-* React
-* npm
-* Spring Boot
-* Gradle
+* React: Frontend
+* npm: Package Manager
+* Spring Boot: Backend  
+* Gradle: Build Automation Tool
 
 ### Deployment Systems
 
@@ -139,5 +155,4 @@ The project is set up to be deployed using Jenkins. To deploy the application, f
 * [LLM Agent Ollama Documentation](https://example.com/ollama-docs)
 * [Jenkins Deployment Guide](https://example.com/jenkins-deployment-guide)
 * [User Stories]()
-* [System Architecture]()
-* [Contribution Table]()
+* [Contribution Table](https://docs.google.com/document/d/1pE-ZKiFhp2LR0S5xu0XFEXQGZV7gShYwgxbmsCg09UA/edit?usp=sharing)
