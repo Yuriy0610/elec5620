@@ -3,6 +3,8 @@ import { Send } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useUser } from './UserContext'; // Import the user context
+import { useNavigate } from 'react-router-dom';
+
 
 const ChatMessage = ({ message, isUser }) => {
     const bubbleStyle = isUser 
@@ -32,6 +34,21 @@ const ChatWithAi = () => {
     const [selectedTimeSlot, setSelectedTimeSlot] = useState("");
     const [appointmentTitle, setAppointmentTitle] = useState("");
     const [error, setError] = useState("");
+
+    const navigate = useNavigate();
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-10">
+        <div className="bg-orange-50 shadow-md rounded-lg p-12">
+          <h1 className="text-2xl font-bold text-orange-800 mb-4">Access Restricted</h1>
+          <p className="text-lg text-gray-700">
+            Please <span className="text-blue-600 cursor-pointer" onClick={() => navigate('/login')}>log in</span> to use the mental health support service.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
     const sendMessage = async (e) => {
         e.preventDefault();

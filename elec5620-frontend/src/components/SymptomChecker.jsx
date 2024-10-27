@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useUser } from './UserContext';
+import { useNavigate } from 'react-router-dom';
 
 const SymptomChecker = () => {
   const [formData, setFormData] = useState({
@@ -23,6 +24,21 @@ const SymptomChecker = () => {
   const [loading, setLoading] = useState(false);
   const [aiResponseVisible, setAiResponseVisible] = useState(false);
   const [llmResponse, setLlmResponse] = useState('');
+  const navigate = useNavigate();
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-10">
+        <div className="bg-orange-50 shadow-md rounded-lg p-12">
+          <h1 className="text-2xl font-bold text-orange-800 mb-4">Access Restricted</h1>
+          <p className="text-lg text-gray-700">
+            Please <span className="text-blue-600 cursor-pointer" onClick={() => navigate('/login')}>log in</span> to use the mental health support service.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
 
   const handleChange = (e, symptom) => {
     const { name, value, type, checked } = e.target;
@@ -174,17 +190,24 @@ const SymptomChecker = () => {
 
             <div className="mt-6 p-4 bg-orange-50 rounded-lg shadow-md rounded-md">
               <label className="block text-lg font-semibold text-gray-700 mb-2">Additional Information</label>
-              <textarea
-                name="additionalInfo"
-                value={formData.additionalInfo}
-                onChange={(e) => handleChange(e, 'additionalInfo')}
-                placeholder="Please provide any other relevant information..."
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-              />
-              {/* Additional Info Validation Message */}
-              {validationMessages.additionalInfo && (
-                <p className="text-sm text-red-500">{validationMessages.additionalInfo}</p>
-              )}
+              <input
+                  type="text"
+                  name="additionalInfo"
+                  value={formData.additionalInfo}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      additionalInfo: e.target.value, // Ensure it's set as a string
+                    }))
+                  }
+                  placeholder="Add any additional information"
+                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                />
+                {/* Validation Message for Additional Info */}
+                {validationMessages.additionalInfo && (
+                  <p className="text-sm text-red-500">{validationMessages.additionalInfo}</p>
+                )}
+
             </div>
 
             {/* Submit Button */}
