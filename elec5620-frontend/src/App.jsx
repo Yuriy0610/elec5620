@@ -5,7 +5,7 @@ import Register from './components/Register';
 import MainLayout from './components/MainLayout';
 import SymptomChecker from './components/SymptomChecker';
 import Appointment from './components/Appointment';
-import Confirmation from './components/Confirmation';
+// import Confirmation from './components/Confirmation';
 import MentalHealthSupport from './components/MentalHealthSupport';
 import ChatWithAi from './components/ChatWithAi';
 import AiResponseSymptomChecker from './components/AiResponse_symptomchecker';
@@ -15,6 +15,8 @@ import UserInfo from './components/UserInfo';
 import UserAppointments from './components/Appointment'; // Importing UserAppointments
 import { UserProvider } from './components/UserContext';
 import Introduction from './components/Introduction';
+import NotFound from './components/NotFound';
+
 
 function App() {
     return (
@@ -30,7 +32,7 @@ function App() {
                         <Route path="contact" element={<div>Contact Content</div>} />
                         <Route path="symptom-checker" element={<SymptomChecker />} />
                         <Route path="appointment" element={<Appointment />} />
-                        <Route path="confirmation" element={<Confirmation />} />
+                        {/* <Route path="confirmation" element={<Confirmation />} /> */}
                         <Route path="mentalhealth" element={<MentalHealthSupport />} />
                         <Route path="chat-ai" element={<ChatWithAi />} />
                         <Route path="ai-response" element={<AiResponseSymptomChecker />} />
@@ -42,6 +44,8 @@ function App() {
 
                     {/* Redirect to login if path is root */}
                     <Route path="/" element={<Navigate to="/login" replace />} />
+
+                    <Route path="*" element={<NotFound />} />
                 </Routes>
             </Router>
         </UserProvider>
