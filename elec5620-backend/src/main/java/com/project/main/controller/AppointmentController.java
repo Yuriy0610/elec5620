@@ -31,4 +31,14 @@ public class AppointmentController {
         List<Appointment> appointments = appointmentService.getAppointmentsByUserId(userId);
         return ResponseEntity.ok(appointments);
     }
+
+    @DeleteMapping("/{appointmentId}")
+    public ResponseEntity<?> deleteAppointment(@PathVariable Long appointmentId) {
+        try {
+            appointmentService.deleteAppointment(appointmentId);
+            return ResponseEntity.ok().build(); // Return 200 OK on successful deletion
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(e.getMessage()); // Return 404 if not found
+        }
+    }
 }

@@ -1,124 +1,205 @@
-import { useEffect, useState } from 'react';
-import { useUser } from './UserContext'; // Import the user context
-import ReactMarkdown from 'react-markdown'; // Import ReactMarkdown
-import remarkGfm from 'remark-gfm'; // Import remark-gfm for GitHub Flavored Markdown
+import React, { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { useUser } from './UserContext';
 
-const ChatToLLM = () => {
-    const { user } = useUser(); // Access the user context
-    const [chats, setChats] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [response, setResponse] = useState(null);
-    const [isProcessing, setIsProcessing] = useState(false); // New state for processing message
+const SymptomChecker = () => {
+  const [formData, setFormData] = useState({
+    fever: { hasSymptom: false, duration: '', severity: '' },
+    headache: { hasSymptom: false, duration: '', severity: '' },
+    cough: { hasSymptom: false, duration: '', severity: '' },
+    soreThroat: { hasSymptom: false, duration: '', severity: '' },
+    fatigue: { hasSymptom: false, duration: '', severity: '' },
+    musclePain: { hasSymptom: false, duration: '', severity: '' },
+    shortnessOfBreath: { hasSymptom: false, duration: '', severity: '' },
+    lossOfTasteSmell: { hasSymptom: false, duration: '', severity: '' },
+    nausea: { hasSymptom: false, duration: '', severity: '' },
+    diarrhea: { hasSymptom: false, duration: '', severity: '' },
+    additionalInfo: '', // Additional text input
+  });
 
-    // Fetch chats for the current user
-    const fetchChats = async () => {
-        if (!user) {
-            setError("No user is logged in.");
-            return; // Exit if no user is logged in
+  const [validationMessages, setValidationMessages] = useState({});
+  const { user } = useUser();
+  const [loading, setLoading] = useState(false);
+  const [aiResponseVisible, setAiResponseVisible] = useState(false);
+  const [llmResponse, setLlmResponse] = useState('');
+
+  const handleChange = (e, symptom) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [symptom]: {
+        ...prev[symptom],
+        [name]: type === 'checkbox' ? checked : value,
+      },
+    }));
+    // Reset validation message for the field on change
+    setValidationMessages((prev) => ({
+      ...prev,
+      [symptom]: { ...prev[symptom], [name]: '' },
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const messages = {};
+    const symptomsSelected = Object.values(formData).some(symptom => symptom.hasSymptom);
+
+    // Check for additional information
+    if (!symptomsSelected && !formData.additionalInfo.trim()) {
+      messages.additionalInfo = 'Please select at least one symptom or provide additional information.';
+    }
+
+    for (const symptom of Object.keys(formData)) {
+      if (formData[symptom].hasSymptom) {
+        if (formData[symptom].duration <= 0) {
+          messages[symptom] = {
+            ...messages[symptom],
+            duration: `${symptom} duration must be a positive number.`,
+          };
         }
-
-        setLoading(true);
-        setError(null);
-
-        try {
-            const res = await fetch(`http://localhost:8080/api/chats/user/${user.id}`); // Use user.id
-            if (!res.ok) {
-                throw new Error(`HTTP error! Status: ${res.status}`);
-            }
-            const data = await res.json();
-            setChats(data);
-            console.log(data); // Log the full response for debugging
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
+        if (formData[symptom].severity < 1 || formData[symptom].severity > 5) {
+          messages[symptom] = {
+            ...messages[symptom],
+            severity: `${symptom} severity must be between 1 and 5.`,
+          };
         }
-    };
+      }
+    }
 
-    // Function to send concatenated chat messages to LLM
-    const sendToLLM = async () => {
-        const concatenatedChats = chats.map(chat => chat.chat).join(' '); // Use chat.chat instead of chat.message
+    setValidationMessages(messages);
 
-        setIsProcessing(true); // Start processing
+    // Stop submission if there are validation messages
+    if (Object.keys(messages).length > 0) {
+      return;
+    }
 
-        try {
-            const role = "doctor"; // Define your role
-            const llmResponse = await fetch(`http://localhost:8080/api/get/${role}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ message: concatenatedChats }), // Send concatenated chats
-            });
-            console.log(concatenatedChats);
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:8080/api/get/doctor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: JSON.stringify(formData) }),
+      });
 
-            if (!llmResponse.ok) {
-                throw new Error(`HTTP error! Status: ${llmResponse.status}`);
-            }
+      if (!response.ok) throw new Error(await response.text());
 
-            const data = await llmResponse.json();
-            setResponse(data.response); // Adjust based on your LLM response structure
-            console.log(data.response); // Log the LLM response for debugging
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setIsProcessing(false); // Stop processing
-        }
-    };
+      const result = await response.json();
+      setLlmResponse(result.response);
+      setAiResponseVisible(true);
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    useEffect(() => {
-        fetchChats();
-    }, [user]); // Fetch chats whenever the user changes
-
-    return (
-        <div className="min-h-screen bg-blue-50 p-10 rounded-lg">
-            <div className="max-w-4xl mx-auto bg-white/80 backdrop-blur-md shadow-xl rounded-lg overflow-hidden p-8">
-                <h1 className="text-4xl font-bold text-center text-blue-800 mb-6">
-                    Chat with LLM
-                </h1>
-
-                {/* Loading Message */}
-                {loading && <p className="text-center text-lg">Loading chats...</p>}
-
-                {/* Error Message */}
-                {error && <p className="text-center text-red-600">Error: {error}</p>}
-
-                {/* Chat Messages */}
-                {chats.length > 0 && (
-                    <div className="space-y-4 mb-4">
-                        {chats.map((chat, index) => (
-                            <div key={index} className="p-4 border rounded-md shadow-sm bg-gray-100">
-                                <p>{chat.chat}</p> {/* Display the chat content */}
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                <button 
-                    onClick={sendToLLM}
-                    className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                >
-                    Send to LLM
-                </button>
-
-                {/* Processing Message */}
-                {isProcessing && (
-                    <div className="mt-4 p-4 bg-yellow-200 border rounded-md text-center">
-                        <p>Processing your current analysis.. Please wait!</p>
-                    </div>
-                )}
-
-                {/* LLM Response */}
-                {response && (
-                    <div className="mt-6 p-4 border rounded-md bg-green-100">
-                        <h2 className="font-semibold">LLM Response:</h2>
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{response}</ReactMarkdown>
-                    </div>
-                )}
-            </div>
+  const renderSymptomInput = (symptom, label) => (
+    <div className="p-4 bg-orange-50 rounded-lg shadow-md rounded-md">
+      <label className="block text-lg font-semibold text-gray-700 mb-2">{label}</label>
+      <div className="flex items-center mb-2">
+        <input
+          type="checkbox"
+          name="hasSymptom"
+          checked={formData[symptom].hasSymptom}
+          onChange={(e) => handleChange(e, symptom)}
+          className="mr-2 h-5 w-5 text-orange-600 border-gray-300 focus:ring-orange-500"
+        />
+        <label className="text-sm text-gray-600">Have this symptom?</label>
+      </div>
+      {formData[symptom].hasSymptom && (
+        <div className="space-y-2">
+          <input
+            type="number"
+            name="duration"
+            value={formData[symptom].duration}
+            onChange={(e) => handleChange(e, symptom)}
+            placeholder="Duration (in days)"
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+          />
+          {/* Duration Validation Message */}
+          {validationMessages[symptom]?.duration && (
+            <p className="text-sm text-red-500">{validationMessages[symptom].duration}</p>
+          )}
+          <select
+            name="severity"
+            value={formData[symptom].severity}
+            onChange={(e) => handleChange(e, symptom)}
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white text-gray-700 hover:bg-gray-50"
+          >
+            <option value="" disabled>Select Severity (1-5)</option>
+            <option value="1">1 - Mild</option>
+            <option value="2">2</option>
+            <option value="3">3 - Moderate</option>
+            <option value="4">4</option>
+            <option value="5">5 - Severe</option>
+          </select>
+          {/* Severity Validation Message */}
+          {validationMessages[symptom]?.severity && (
+            <p className="text-sm text-red-500">{validationMessages[symptom].severity}</p>
+          )}
         </div>
-    );
+      )}
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-orange-50 rounded-lg flex items-center justify-center">
+      <div className="w-full max-w-5xl p-8 bg-white shadow-lg rounded-lg">
+        {aiResponseVisible ? (
+          <div className="text-lg text-gray-700">
+            <h1 className="text-4xl font-bold text-orange-800 mb-4 text-center">Here is my analysis:</h1>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {llmResponse}
+            </ReactMarkdown>
+          </div>
+        ) : (
+          <>
+            <h1 className="text-4xl font-bold text-orange-800 mb-2 text-center">Symptom Checker</h1>
+            <p className="text-base text-gray-500 mb-8 text-center">
+              Do you have any of the following symptoms? If yes, please check the box.
+            </p>
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {renderSymptomInput('fever', 'Fever')}
+              {renderSymptomInput('headache', 'Headache')}
+              {renderSymptomInput('cough', 'Cough')}
+              {renderSymptomInput('soreThroat', 'Sore Throat')}
+              {renderSymptomInput('fatigue', 'Fatigue')}
+              {renderSymptomInput('musclePain', 'Muscle Pain')}
+              {renderSymptomInput('shortnessOfBreath', 'Shortness of Breath')}
+              {renderSymptomInput('lossOfTasteSmell', 'Loss of Taste/Smell')}
+              {renderSymptomInput('nausea', 'Nausea')}
+              {renderSymptomInput('diarrhea', 'Diarrhea')}
+            </form>
+
+            <div className="mt-6 p-4 bg-orange-50 rounded-lg shadow-md rounded-md">
+              <label className="block text-lg font-semibold text-gray-700 mb-2">Additional Information</label>
+              <textarea
+                name="additionalInfo"
+                value={formData.additionalInfo}
+                onChange={(e) => handleChange(e, 'additionalInfo')}
+                placeholder="Please provide any other relevant information..."
+                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+              {/* Additional Info Validation Message */}
+              {validationMessages.additionalInfo && (
+                <p className="text-sm text-red-500">{validationMessages.additionalInfo}</p>
+              )}
+            </div>
+
+            {/* Submit Button */}
+            <button
+              onClick={handleSubmit}
+              className="mt-8 w-full py-4 bg-orange-700 text-white font-bold rounded-lg hover:bg-orange-800 transition-colors duration-200"
+              disabled={loading}
+            >
+              {loading ? 'Submitting...' : 'Submit Symptoms'}
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
 };
 
-export default ChatToLLM;
+export default SymptomChecker;

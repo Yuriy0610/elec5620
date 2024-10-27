@@ -34,6 +34,17 @@ const UserAppointments = () => {
         fetchAppointments();
     }, [user]);
 
+    const handleDelete = async (appointmentId) => {
+        try {
+            await fetch(`/api/appointments/${appointmentId}`, { method: 'DELETE' });
+            // Remove the deleted appointment from the state
+            setAppointments(appointments.filter(appointment => appointment.id !== appointmentId));
+        } catch (err) {
+            setError('Failed to delete appointment');
+            console.error("Error deleting appointment:", err);
+        }
+    };
+
     if (loading) {
         return <div>Loading appointments...</div>;
     }
@@ -52,6 +63,7 @@ const UserAppointments = () => {
                         <tr className="border-b">
                             <th className="px-4 py-2 text-left">Appointment</th>
                             <th className="px-4 py-2 text-left">Date & Time</th>
+                            <th className="px-4 py-2 text-left">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -63,6 +75,13 @@ const UserAppointments = () => {
                                 <tr key={appointment.id} className="border-b">
                                     <td className="px-4 py-2">{appointment.title}</td>
                                     <td className="px-4 py-2">{formattedDateTime}</td>
+                                    <td className="px-4 py-2">
+                                        <button 
+                                            onClick={() => handleDelete(appointment.id)} 
+                                            className="text-red-600 hover:underline">
+                                            🗑️ Delete
+                                        </button>
+                                    </td>
                                 </tr>
                             );
                         })}

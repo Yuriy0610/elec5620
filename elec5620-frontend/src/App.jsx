@@ -29,7 +29,7 @@ function App() {
                     {/* MainLayout with nested routes */}
                     <Route path="/main-layout" element={<MainLayout />}>
                         <Route index element={<Introduction />} /> {/* Default content */}
-                        <Route path="contact" element={<div>Contact Content</div>} />
+                        {/* <Route path="contact" element={<div>Contact Content</div>} /> */}
                         <Route path="symptom-checker" element={<SymptomChecker />} />
                         <Route path="appointment" element={<Appointment />} />
                         {/* <Route path="confirmation" element={<Confirmation />} /> */}

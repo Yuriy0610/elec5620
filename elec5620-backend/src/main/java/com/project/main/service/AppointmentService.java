@@ -28,4 +28,14 @@ public class AppointmentService {
     public List<Appointment> getAppointmentsByUserId(Long userId) {
         return appointmentRepository.findByUserId(userId);
     }
+
+    public void deleteAppointment(Long appointmentId) throws Exception {
+        Optional<Appointment> appointment = appointmentRepository.findById(appointmentId);
+        if (appointment.isPresent()) {
+            appointmentRepository.delete(appointment.get());
+        } else {
+            throw new Exception("Appointment not found");
+        }
+    }
+
 }
