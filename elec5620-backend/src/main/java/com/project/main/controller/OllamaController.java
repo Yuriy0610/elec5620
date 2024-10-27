@@ -41,11 +41,4 @@ public class OllamaController {
         return ResponseEntity.ok(ollamaService.getNews(role, request.getMessage()));
     }
 
-//     @PostMapping("/diagnose/{role}")
-//     public ResponseEntity<ChatResponse> chat(
-//             @PathVariable String role,
-//             @RequestBody ChatRequest request) {
-//         log.info("Received chat request for role: {}, message: {}", role, request.getMessage());
-//         return ResponseEntity.ok(ollamaService.getNews(role, request.getMessage()));
-//     }
 }

@@ -27,8 +27,7 @@ public class OllamaService {
         put("doctor", "You are a campus health care consultant. Analyze the symptoms raised by students from ");
         put("mental_health", "You are a university psychologist. Provide mental health suggestions to students based on");
         put("news_reporter", "You are a health news reporter, broadcasting relevant health news for students from ");
-        put("health_support_quick_links", "Thanks for dropping by! Here are the links you are looking for from ");
-        // put("symptom_checker", "Thanks for dropping by! Here are the links you are looking for from ");
+        put("health_support_quick_links", "You are going to help students by providing them the health care resources, information and links for selected university. ");
 
     }};
 

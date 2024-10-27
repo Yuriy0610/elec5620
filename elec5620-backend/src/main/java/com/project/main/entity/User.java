@@ -24,18 +24,9 @@ public class User {
     @Column(nullable = false)
     private String role;
 
-    // @ElementCollection
-    // @Column(name = "recent_chats", columnDefinition = "TEXT")
-    // private List<String> recentChats = new ArrayList<>(10);
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Appointment> appointments = new ArrayList<>();
-
-    // // Constructor
-    // public User() {
-    //     this.recentChats = new ArrayList<>();
-    // }
 
     // Getters and Setters
 
@@ -88,12 +79,4 @@ public class User {
     public void setAppointments(List<Appointment> appointments) {
         this.appointments = appointments;
     }
-
-    // public List<String> getRecentChats() {
-    //     return recentChats;
-    // }
-
-    // public void setRecentChats(List<String> recentChats) {
-    //     this.recentChats = recentChats;
-    // }
 }

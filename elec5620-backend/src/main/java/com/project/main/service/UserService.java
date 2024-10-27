@@ -36,33 +36,4 @@ public class UserService {
         return user.get();
     }
 
-    
-// @Transactional
-
-//     // Update to add a new chat while keeping the list under 20
-//     public User registerChat(String email, String chat) throws Exception {
-//     Optional<User> userOpt = userRepository.findByEmail(email);
-//     if (!userOpt.isPresent()) {
-//         throw new Exception("User not found.");
-//     }
-//     User user = userOpt.get();
-
-//     // Initialize recentChats if it's null
-//     List<String> recentChats = user.getRecentChats();
-//     if (recentChats == null) {
-//         recentChats = new ArrayList<>();
-//     }
-
-//     // Add new chat and ensure list size does not exceed 20
-//     if (recentChats.size() >= 20) {
-//         recentChats.remove(0); // Remove oldest chat if limit is exceeded
-//     }
-//     recentChats.add(chat);
-
-//     user.setRecentChats(recentChats);
-//     return userRepository.save(user);
-// }
-
-
-
 }
