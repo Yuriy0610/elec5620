@@ -3,7 +3,7 @@ import { Link, useNavigate, Outlet } from 'react-router-dom';
 import {
     Rocket, // Updated icon for "Quick Links"
     Users,
-    MessageCircle,
+    ClipboardList,
     Menu,
     LogOut,
     CircleCheckBig,
@@ -51,7 +51,7 @@ const MainLayout = () => {
                         { icon: SmilePlus, text: 'Mental Health', to: '/main-layout/mentalhealth' },
                         { icon: MessageSquare, text: 'Chat with AI', to: '/main-layout/chat-ai' },
                         { icon: CircleCheckBig, text: 'Appointments', to: '/main-layout/user-appointments' },
-                        { icon: MessageCircle, text: 'Contact', to: '/main-layout/contact' },
+                        { icon: ClipboardList, text: 'Tracker', to: '/main-layout/chat-to-llm' },
                     ].map(({ icon: Icon, text, to }) => (
                         <Link
                             key={text}

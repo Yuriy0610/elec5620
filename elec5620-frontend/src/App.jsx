@@ -16,7 +16,7 @@ import UserAppointments from './components/Appointment'; // Importing UserAppoin
 import { UserProvider } from './components/UserContext';
 import Introduction from './components/Introduction';
 import NotFound from './components/NotFound';
-
+import ChatToLLM from './components/ChatToLLM'; // Import the new component
 
 function App() {
     return (
@@ -40,6 +40,7 @@ function App() {
                         <Route path="home" element={<Home />} />
                         <Route path="user-info" element={<UserInfo />} />
                         <Route path="user-appointments" element={<UserAppointments />} /> {/* New route for UserAppointments */}
+                        <Route path="chat-to-llm" element={<ChatToLLM />} /> 
                     </Route>
 
                     {/* Redirect to login if path is root */}

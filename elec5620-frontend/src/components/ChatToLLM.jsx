@@ -72,10 +72,10 @@ const ChatToLLM = () => {
     }, [user]); // Fetch chats whenever the user changes
 
     return (
-        <div className="min-h-screen bg-blue-50 p-10 rounded-lg">
+        <div className="min-h-screen bg-orange-50 p-10 rounded-lg">
             <div className="max-w-4xl mx-auto bg-white/80 backdrop-blur-md shadow-xl rounded-lg overflow-hidden p-8">
-                <h1 className="text-4xl font-bold text-center text-blue-800 mb-6">
-                    Chat with LLM
+                <h1 className="text-4xl font-bold text-center text-orange-800 mb-6">
+                    Your Recent Chats 
                 </h1>
 
                 {/* Loading Message */}
@@ -97,9 +97,9 @@ const ChatToLLM = () => {
 
                 <button 
                     onClick={sendToLLM}
-                    className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    className="mt-4 bg-orange-700 text-white px-4 py-2 rounded hover:bg-blue-700"
                 >
-                    Send to LLM
+                    Get Analysis
                 </button>
 
                 {/* Processing Message */}
@@ -111,8 +111,8 @@ const ChatToLLM = () => {
 
                 {/* LLM Response */}
                 {response && (
-                    <div className="mt-6 p-4 border rounded-md bg-green-100">
-                        <h2 className="font-semibold">LLM Response:</h2>
+                    <div className="mt-6 p-4 border rounded-md bg-orange-100">
+                        <h2 className="font-semibold">Here are my thoughts: 🤝</h2>
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>{response}</ReactMarkdown>
                     </div>
                 )}

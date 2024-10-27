@@ -24,7 +24,7 @@ public class OllamaService {
     private String ollamaBaseUrl;
 
     private final Map<String, String> rolePrompts = new HashMap<>() {{
-        put("doctor", "You are a campus doctor. Analyze the symptoms raised by students from ");
+        put("doctor", "You are a campus health care consultant. Analyze the symptoms raised by students from ");
         put("mental_health", "You are a university psychologist. Provide mental health suggestions to students based on");
         put("news_reporter", "You are a health news reporter, broadcasting relevant health news for students from ");
         put("health_support_quick_links", "Thanks for dropping by! Here are the links you are looking for from ");
