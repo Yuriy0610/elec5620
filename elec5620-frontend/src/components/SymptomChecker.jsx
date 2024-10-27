@@ -47,52 +47,81 @@ const SymptomChecker = () => {
 
     // Check for additional information
     if (!symptomsSelected && !formData.additionalInfo.trim()) {
-      messages.additionalInfo = 'Please select at least one symptom or provide additional information.';
+        messages.additionalInfo = 'Please select at least one symptom or provide additional information.';
     }
 
     for (const symptom of Object.keys(formData)) {
-      if (formData[symptom].hasSymptom) {
-        if (formData[symptom].duration <= 0) {
-          messages[symptom] = {
-            ...messages[symptom],
-            duration: `${symptom} duration must be a positive number.`,
-          };
+        if (formData[symptom].hasSymptom) {
+            if (formData[symptom].duration <= 0) {
+                messages[symptom] = {
+                    ...messages[symptom],
+                    duration: `${symptom} duration must be a positive number.`,
+                };
+            }
+            if (formData[symptom].severity < 1 || formData[symptom].severity > 5) {
+                messages[symptom] = {
+                    ...messages[symptom],
+                    severity: `${symptom} severity must be between 1 and 5.`,
+                };
+            }
         }
-        if (formData[symptom].severity < 1 || formData[symptom].severity > 5) {
-          messages[symptom] = {
-            ...messages[symptom],
-            severity: `${symptom} severity must be between 1 and 5.`,
-          };
-        }
-      }
     }
 
     setValidationMessages(messages);
 
     // Stop submission if there are validation messages
     if (Object.keys(messages).length > 0) {
-      return;
+        return;
     }
 
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:8080/api/get/doctor', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: JSON.stringify(formData) }),
-      });
+        // Construct the chat message
+        const chatMessage = Object.keys(formData)
+            .filter(symptom => formData[symptom].hasSymptom)
+            .map(symptom => {
+                const { duration, severity } = formData[symptom];
+                return `${symptom} (Duration: ${duration} days, Severity: ${severity})`;
+            })
+            .join(', ');
 
-      if (!response.ok) throw new Error(await response.text());
+        const additionalInfo = formData.additionalInfo.trim();
+        const messageToSend = additionalInfo ? `${chatMessage}; Additional Information: ${additionalInfo}` : chatMessage;
 
-      const result = await response.json();
-      setLlmResponse(result.response);
-      setAiResponseVisible(true);
+        console.log("Sending message:", messageToSend); // Debug log
+
+        // First API call to your existing endpoint
+        const response = await fetch('http://localhost:8080/api/get/doctor', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: messageToSend }),
+        });
+
+        if (!response.ok) throw new Error(await response.text());
+
+        const result = await response.json();
+        setLlmResponse(result.response);
+        setAiResponseVisible(true);
+
+        // Second API call to save the chat
+        const saveChatResponse = await fetch(`http://localhost:8080/api/chats/create/${user.id}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat: messageToSend }),
+        });
+
+        if (!saveChatResponse.ok) throw new Error(await saveChatResponse.text());
+
+        // Optionally handle the response from the save chat API if needed
+        const saveChatResult = await saveChatResponse.json();
+        console.log("Chat saved:", saveChatResult);
+
     } catch (error) {
-      console.error('Error:', error);
+        console.error('Error occurred while submitting the form:', error);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
 
   const renderSymptomInput = (symptom, label) => (
     <div className="p-4 bg-orange-50 rounded-lg shadow-md rounded-md">

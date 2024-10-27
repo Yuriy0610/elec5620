@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 @Entity
 @Table(name = "users")
 public class User {
@@ -25,13 +24,18 @@ public class User {
     @Column(nullable = false)
     private String role;
 
-    @Column(nullable = true)
-    private List<String> recentChats = new ArrayList<>(10);
+    // @ElementCollection
+    // @Column(name = "recent_chats", columnDefinition = "TEXT")
+    // private List<String> recentChats = new ArrayList<>(10);
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Appointment> appointments = new ArrayList<>();
-    
+
+    // // Constructor
+    // public User() {
+    //     this.recentChats = new ArrayList<>();
+    // }
 
     // Getters and Setters
 
@@ -75,7 +79,6 @@ public class User {
         this.role = role;
     }
 
-
     // Getter and Setter for appointments
 
     public List<Appointment> getAppointments() {
@@ -86,12 +89,11 @@ public class User {
         this.appointments = appointments;
     }
 
-    public List<String> getRecentChats() {
-        return recentChats;
-    }
+    // public List<String> getRecentChats() {
+    //     return recentChats;
+    // }
 
-    public void setRecentChats(List<String> recentChats) {
-        this.recentChats = recentChats;
-    }
-    
+    // public void setRecentChats(List<String> recentChats) {
+    //     this.recentChats = recentChats;
+    // }
 }

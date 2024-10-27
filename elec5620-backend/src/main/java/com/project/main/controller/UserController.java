@@ -38,15 +38,16 @@ public class UserController {
         }
     }
 
-    @PostMapping("/registerChat")
-    public ResponseEntity<?> registerChat(@RequestParam String email, @RequestBody String chat) {
-        try {
-            User user = userService.registerChat(email, chat);
-            return ResponseEntity.ok(user);
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body(Collections.singletonMap("error", e.getMessage()));
-        }
-    }
+    // @PostMapping("/registerChat")
+    // public ResponseEntity<?> registerChat(@RequestParam String email, @RequestBody String chat) {
+    //     try {
+    //         User user = userService.registerChat(email, chat);
+    //         return ResponseEntity.ok(user);
+    //     } catch (Exception e) {
+    //         return ResponseEntity.status(401).body(Collections.singletonMap("error", e.getMessage()));
+    //     }
+    // }
+
 
 
 }

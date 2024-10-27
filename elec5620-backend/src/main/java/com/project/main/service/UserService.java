@@ -4,7 +4,10 @@ import com.project.main.entity.User;
 import com.project.main.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,24 +36,33 @@ public class UserService {
         return user.get();
     }
 
-    // Update to add a new chat while keeping the list under 20
-    public User registerChat(String email, String chat) throws Exception {
-        Optional<User> userOpt = userRepository.findByEmail(email);
-        if (!userOpt.isPresent()) {
-            throw new Exception("User not found.");
-        }
-        User user = userOpt.get();
+    
+// @Transactional
 
-        // Add new chat and ensure list size does not exceed 20
-        List<String> recentChats = user.getRecentChats();
-        if (recentChats.size() >= 20) {
-            recentChats.remove(0); // Remove oldest chat if limit is exceeded
-        }
-        recentChats.add(chat);
+//     // Update to add a new chat while keeping the list under 20
+//     public User registerChat(String email, String chat) throws Exception {
+//     Optional<User> userOpt = userRepository.findByEmail(email);
+//     if (!userOpt.isPresent()) {
+//         throw new Exception("User not found.");
+//     }
+//     User user = userOpt.get();
 
-        user.setRecentChats(recentChats);
-        return userRepository.save(user);
-    }
+//     // Initialize recentChats if it's null
+//     List<String> recentChats = user.getRecentChats();
+//     if (recentChats == null) {
+//         recentChats = new ArrayList<>();
+//     }
+
+//     // Add new chat and ensure list size does not exceed 20
+//     if (recentChats.size() >= 20) {
+//         recentChats.remove(0); // Remove oldest chat if limit is exceeded
+//     }
+//     recentChats.add(chat);
+
+//     user.setRecentChats(recentChats);
+//     return userRepository.save(user);
+// }
+
 
 
 }
