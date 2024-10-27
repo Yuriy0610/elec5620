@@ -43,7 +43,7 @@ const MentalHealthSupport = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-gray-50 p-10"> {/* Increased padding */}
-      <div className="bg-white shadow-md rounded-lg p-12 w-full max-w-5xl"> {/* Increased max-width and padding */}
+      <div className="bg-orange-50 shadow-md rounded-lg p-12 w-full max-w-5xl"> {/* Increased max-width and padding */}
         {showResponse ? (
           // Display AI response after form submission
           <div>

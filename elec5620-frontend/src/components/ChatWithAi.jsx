@@ -6,8 +6,8 @@ import { useUser } from './UserContext'; // Import the user context
 
 const ChatMessage = ({ message, isUser }) => {
     const bubbleStyle = isUser
-        ? `bg-blue-500 text-white justify-end`
-        : `bg-gray-300 text-black justify-start`;
+        ? `bg-orange-100 text-black justify-end`
+        : `bg-orange-200 text-black justify-start`;
 
     return (
         <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} my-1`}>
@@ -23,7 +23,7 @@ const ChatMessage = ({ message, isUser }) => {
 const ChatWithAi = () => {
     const { user } = useUser(); // Access the user context
     const [messages, setMessages] = useState([
-        { text: "Hello! How can I help you today?", isUser: false },
+        { text: "Hello! How can I help you today? \n\n\n Ping 'Appointment' or 'Reservation' to help me track your schedules!", isUser: false },
     ]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);

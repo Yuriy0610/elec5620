@@ -63,10 +63,10 @@ const HealthNews = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-orange-200 to-orange-400 p-10">
+        <div className="min-h-screen bg-orange-50 rounded-lg p-10">
             <div className="max-w-4xl mx-auto bg-white/80 backdrop-blur-md shadow-xl rounded-lg overflow-hidden">
                 <div className="p-8">
-                    <h1 className="text-4xl font-bold text-center mb-6 text-indigo-900">
+                    <h1 className="text-4xl font-bold text-center text-orange-800 mb-6">
                         Health News 📰
                     </h1>
 
@@ -76,7 +76,7 @@ const HealthNews = () => {
                             <button
                                 key={cat}
                                 onClick={() => setCategory(cat)}
-                                className={`py-2 px-4 rounded-full text-white ${category === cat ? 'bg-indigo-700' : 'bg-indigo-400'} hover:bg-indigo-600 transition`}
+                                className={`py-2 px-4 rounded-full text-white ${category === cat ? 'bg-orange-700' : 'bg-orange-500'} hover:bg-orange-600 transition`}
                             >
                                 {cat}
                             </button>
@@ -85,7 +85,7 @@ const HealthNews = () => {
 
                     {/* Loading Message with slight yellow background */}
                     {loading && (
-                        <p className="text-center text-lg font-medium text-gray-700 bg-yellow-200 p-4 rounded-md">
+                        <p className="text-center text-lg font-medium text-yellow-800 bg-yellow-100 p-4 rounded-md">
                             Loading {category} news...
                         </p>
                     )}

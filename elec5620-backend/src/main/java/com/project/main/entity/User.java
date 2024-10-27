@@ -25,10 +25,12 @@ public class User {
     @Column(nullable = false)
     private String role;
 
+    @Column(nullable = true)
+    private List<String> recentChats = new ArrayList<>(10);
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Appointment> appointments = new ArrayList<>();
-
     
 
     // Getters and Setters
@@ -74,15 +76,22 @@ public class User {
     }
 
 
-// Getter and Setter for appointments
+    // Getter and Setter for appointments
 
-public List<Appointment> getAppointments() {
-    return appointments;
-}
+    public List<Appointment> getAppointments() {
+        return appointments;
+    }
 
-public void setAppointments(List<Appointment> appointments) {
-    this.appointments = appointments;
-}
+    public void setAppointments(List<Appointment> appointments) {
+        this.appointments = appointments;
+    }
 
+    public List<String> getRecentChats() {
+        return recentChats;
+    }
 
+    public void setRecentChats(List<String> recentChats) {
+        this.recentChats = recentChats;
+    }
+    
 }

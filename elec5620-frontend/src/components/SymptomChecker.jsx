@@ -1,25 +1,28 @@
 import React, { useState } from 'react';
-import ReactMarkdown from 'react-markdown'; // Import ReactMarkdown
-import remarkGfm from 'remark-gfm'; // Import remark-gfm for GitHub Flavored Markdown
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { useUser } from './UserContext';
 
 const SymptomChecker = () => {
   const [formData, setFormData] = useState({
     fever: { hasSymptom: false, duration: '', severity: '' },
     headache: { hasSymptom: false, duration: '', severity: '' },
     cough: { hasSymptom: false, duration: '', severity: '' },
-    shortnessOfBreath: { hasSymptom: false, duration: '', severity: '' },
-    abdominalPain: { hasSymptom: false, duration: '', severity: '' },
-    indigestion: { hasSymptom: false, duration: '', severity: '' },
-    chestPain: { hasSymptom: false, duration: '', severity: '' },
+    soreThroat: { hasSymptom: false, duration: '', severity: '' },
     fatigue: { hasSymptom: false, duration: '', severity: '' },
-    jointPain: { hasSymptom: false, duration: '', severity: '' },
-    muscleSoreness: { hasSymptom: false, duration: '', severity: '' },
+    musclePain: { hasSymptom: false, duration: '', severity: '' },
+    shortnessOfBreath: { hasSymptom: false, duration: '', severity: '' },
+    lossOfTasteSmell: { hasSymptom: false, duration: '', severity: '' },
+    nausea: { hasSymptom: false, duration: '', severity: '' },
+    diarrhea: { hasSymptom: false, duration: '', severity: '' },
     additionalInfo: '', // Additional text input
   });
 
+  const [validationMessages, setValidationMessages] = useState({});
+  const { user } = useUser();
   const [loading, setLoading] = useState(false);
   const [aiResponseVisible, setAiResponseVisible] = useState(false);
-  const [llmResponse, setLlmResponse] = useState(''); // To hold the AI's response
+  const [llmResponse, setLlmResponse] = useState('');
 
   const handleChange = (e, symptom) => {
     const { name, value, type, checked } = e.target;
@@ -30,64 +33,69 @@ const SymptomChecker = () => {
         [name]: type === 'checkbox' ? checked : value,
       },
     }));
-  };
-
-  const handleAdditionalChange = (e) => {
-    setFormData({ ...formData, additionalInfo: e.target.value });
+    // Reset validation message for the field on change
+    setValidationMessages((prev) => ({
+      ...prev,
+      [symptom]: { ...prev[symptom], [name]: '' },
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Basic validation
+    const messages = {};
+    const symptomsSelected = Object.values(formData).some(symptom => symptom.hasSymptom);
+
+    // Check for additional information
+    if (!symptomsSelected && !formData.additionalInfo.trim()) {
+      messages.additionalInfo = 'Please select at least one symptom or provide additional information.';
+    }
+
     for (const symptom of Object.keys(formData)) {
       if (formData[symptom].hasSymptom) {
         if (formData[symptom].duration <= 0) {
-          alert(`${symptom} duration must be a positive number.`);
-          return;
+          messages[symptom] = {
+            ...messages[symptom],
+            duration: `${symptom} duration must be a positive number.`,
+          };
         }
         if (formData[symptom].severity < 1 || formData[symptom].severity > 5) {
-          alert(`${symptom} severity must be between 1 and 5.`);
-          return;
+          messages[symptom] = {
+            ...messages[symptom],
+            severity: `${symptom} severity must be between 1 and 5.`,
+          };
         }
       }
     }
-    
-    console.log('Submitted symptoms and additional info:', formData);
+
+    setValidationMessages(messages);
+
+    // Stop submission if there are validation messages
+    if (Object.keys(messages).length > 0) {
+      return;
+    }
+
     setLoading(true);
-  
     try {
       const response = await fetch('http://localhost:8080/api/get/doctor', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: JSON.stringify(formData),
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: JSON.stringify(formData) }),
       });
-  
-      if (!response.ok) {
-        const errorMessage = await response.text(); // Capture the response message
-        throw new Error(errorMessage || 'Failed to submit symptoms');
-      }
-  
+
+      if (!response.ok) throw new Error(await response.text());
+
       const result = await response.json();
-      console.log('AI Advice:', result);
-  
       setLlmResponse(result.response);
       setAiResponseVisible(true);
     } catch (error) {
       console.error('Error:', error);
-      alert(`An error occurred: ${error.message || 'please try again.'}`);
     } finally {
       setLoading(false);
     }
   };
-  
 
   const renderSymptomInput = (symptom, label) => (
-    <div className="p-4 bg-white shadow-md rounded-md">
+    <div className="p-4 bg-orange-50 rounded-lg shadow-md rounded-md">
       <label className="block text-lg font-semibold text-gray-700 mb-2">{label}</label>
       <div className="flex items-center mb-2">
         <input
@@ -109,6 +117,10 @@ const SymptomChecker = () => {
             placeholder="Duration (in days)"
             className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
+          {/* Duration Validation Message */}
+          {validationMessages[symptom]?.duration && (
+            <p className="text-sm text-red-500">{validationMessages[symptom].duration}</p>
+          )}
           <select
             name="severity"
             value={formData[symptom].severity}
@@ -122,32 +134,21 @@ const SymptomChecker = () => {
             <option value="4">4</option>
             <option value="5">5 - Severe</option>
           </select>
+          {/* Severity Validation Message */}
+          {validationMessages[symptom]?.severity && (
+            <p className="text-sm text-red-500">{validationMessages[symptom].severity}</p>
+          )}
         </div>
       )}
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gray-200 flex items-center justify-center">
+    <div className="min-h-screen bg-orange-50 rounded-lg flex items-center justify-center">
       <div className="w-full max-w-5xl p-8 bg-white shadow-lg rounded-lg">
         {aiResponseVisible ? (
           <div className="text-lg text-gray-700">
             <h1 className="text-4xl font-bold text-orange-800 mb-4 text-center">Here is my analysis:</h1>
-            <h2 className="font-semibold">Symptoms You Reported:</h2>
-            <ul className="list-disc ml-6 mb-4">
-              {Object.keys(formData).map((symptom) => {
-                if (formData[symptom].hasSymptom) {
-                  return (
-                    <li key={symptom}>
-                      <strong>{symptom}:</strong> {formData[symptom].duration} days, Severity {formData[symptom].severity}
-                    </li>
-                  );
-                }
-                return null;
-              })}
-            </ul>
-            <h2 className="font-semibold">My Advice:</h2>
-            {/* Render the AI's advice using ReactMarkdown */}
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {llmResponse}
             </ReactMarkdown>
@@ -162,24 +163,28 @@ const SymptomChecker = () => {
               {renderSymptomInput('fever', 'Fever')}
               {renderSymptomInput('headache', 'Headache')}
               {renderSymptomInput('cough', 'Cough')}
-              {renderSymptomInput('shortnessOfBreath', 'Shortness of Breath')}
-              {renderSymptomInput('abdominalPain', 'Abdominal Pain')}
-              {renderSymptomInput('indigestion', 'Indigestion')}
-              {renderSymptomInput('chestPain', 'Chest Pain')}
+              {renderSymptomInput('soreThroat', 'Sore Throat')}
               {renderSymptomInput('fatigue', 'Fatigue')}
-              {renderSymptomInput('jointPain', 'Joint Pain')}
-              {renderSymptomInput('muscleSoreness', 'Muscle Soreness')}
+              {renderSymptomInput('musclePain', 'Muscle Pain')}
+              {renderSymptomInput('shortnessOfBreath', 'Shortness of Breath')}
+              {renderSymptomInput('lossOfTasteSmell', 'Loss of Taste/Smell')}
+              {renderSymptomInput('nausea', 'Nausea')}
+              {renderSymptomInput('diarrhea', 'Diarrhea')}
             </form>
 
-            {/* Additional Information Input */}
-            <div className="mt-8">
-              <h3 className="text-lg font-semibold mb-4">Additional Information</h3>
+            <div className="mt-6 p-4 bg-orange-50 rounded-lg shadow-md rounded-md">
+              <label className="block text-lg font-semibold text-gray-700 mb-2">Additional Information</label>
               <textarea
+                name="additionalInfo"
                 value={formData.additionalInfo}
-                onChange={handleAdditionalChange}
-                placeholder="Please provide any additional information here..."
-                className="w-full h-32 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-              ></textarea>
+                onChange={(e) => handleChange(e, 'additionalInfo')}
+                placeholder="Please provide any other relevant information..."
+                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+              {/* Additional Info Validation Message */}
+              {validationMessages.additionalInfo && (
+                <p className="text-sm text-red-500">{validationMessages.additionalInfo}</p>
+              )}
             </div>
 
             {/* Submit Button */}

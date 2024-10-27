@@ -87,7 +87,7 @@ const Home = () => {
 
                 <button
                     type="submit"
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none"
+                    className="px-4 py-2 bg-orange-700 text-white font-bold rounded-lg hover:bg-orange-800 focus:outline-none"
                     disabled={!selectedUniversity || loading} // Disable if loading
                 >
                     Ask AI

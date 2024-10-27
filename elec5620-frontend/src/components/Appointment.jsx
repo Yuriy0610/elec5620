@@ -43,7 +43,7 @@ const UserAppointments = () => {
     }
 
     return (
-        <div className="bg-white p-6 rounded shadow-md">
+        <div className="bg-orange-50 p-6 rounded shadow-md">
             <h2 className="text-xl font-semibold mb-4">Your Appointments</h2>
             
             {appointments.length > 0 ? (
