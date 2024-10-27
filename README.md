@@ -136,8 +136,8 @@ The project is set up to be deployed using Jenkins. To deploy the application, f
 
 ### Application Frameworks
 
-* React: Frontend
-* npm: Package Manager
+* React+Vite: Frontend
+* NPM: Package Manager
 * Spring Boot: Backend  
 * Gradle: Build Automation Tool
 
