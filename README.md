@@ -140,14 +140,80 @@ The project is set up to be deployed using Jenkins. To deploy the application, f
 * NPM: Package Manager
 * Spring Boot: Backend  
 * Gradle: Build Automation Tool
+* Database: PostgresSQL
+* Docker: Deployment
 
 ### Deployment Systems
 
-* Jenkins
+* Docker
+
+    Dockerfile for Backend
+
+    ### Steps
+1. In backend/Dockerfile:
+
+   ``` 
+    FROM openjdk:17-jdk-slim
+
+    WORKDIR /app
+
+    COPY target/app.jar app.jar
+
+    EXPOSE 8080
+
+    ENTRYPOINT ["java", "-jar", "app.jar"]```
+
+    Dockerfile for Frontend
+2. In frontend/Dockerfile:
+    ```
+    FROM node:18 AS build
+
+    WORKDIR /app
+
+    COPY package.json package-lock.json ./
+
+    RUN npm install
+
+    COPY . .
+
+    RUN npm run build
+
+    FROM nginx:alpine
+
+    COPY --from=build /app/build /usr/share/nginx/html
+
+    EXPOSE 80
+    ```
+
+3. Docker Compose, In the root docker-compose.yml:
+    ```
+    version: '3.8'
+    services:
+    backend:
+        build: ./backend
+        ports: ["8080:8080"]
+    frontend:
+        build: ./frontend
+        ports: ["3000:80"]
+    Build and Run
+    ```
+4. In the project root, run:
+
+    ```
+    docker-compose build && docker-compose up
+    ```
+5. Access the Application
+
+    ```
+    Frontend: http://localhost:3000
+
+    Backend: http://localhost:8080
+    ```
+
 
 ### New AI Tools or Techniques
 
-* LLM Agent Ollama version 6.1
+* LLM Agent Ollama version 3.2
 
 ## Helpful Links
 
