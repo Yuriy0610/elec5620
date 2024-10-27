@@ -218,7 +218,7 @@ const ChatWithAi = () => {
                                 <button
                                     key={timeSlot}
                                     onClick={() => handleTimeSlotClick(timeSlot)}
-                                    className={`border rounded py-2 px-4 ${selectedTimeSlot === timeSlot ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-blue-500 hover:text-white'}`}
+                                    className={`border rounded py-2 px-4 ${selectedTimeSlot === timeSlot ? 'bg-orange-600 text-white' : 'bg-gray-200 hover:bg-orange-500 hover:text-white'}`}
                                 >
                                     {timeSlot}
                                 </button>
@@ -233,7 +233,7 @@ const ChatWithAi = () => {
                     )}
 
                     <div className="flex justify-end mt-4">
-                        <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" onClick={handleConfirm}>
+                        <button className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700" onClick={handleConfirm}>
                             Confirm
                         </button>
                     </div>
@@ -250,7 +250,7 @@ const ChatWithAi = () => {
                             placeholder="Type your message..."
                             className="border rounded p-2 flex-grow"
                         />
-                        <button type="submit" className="ml-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                        <button type="submit" className="ml-2 bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700">
                             <Send />
                         </button>
                     </div>

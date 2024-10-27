@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useUser } from './UserContext';
 
 const MentalHealthSupport = () => {
   const [userInput, setUserInput] = useState('');
   const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showResponse, setShowResponse] = useState(false); // To control form and response visibility
-  const userId = 1; // Replace with the actual user ID or retrieve it dynamically
-
+  const [showResponse, setShowResponse] = useState(false); 
+  const { user } = useUser();
   const handleInputChange = (e) => {
     setUserInput(e.target.value);
   };
+
+  const userId = user.id; 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,6 +36,7 @@ const MentalHealthSupport = () => {
       const result = await res.json();
       setResponse(result.response); // Assuming your AI API returns a 'response' field
       setShowResponse(true); // Show the AI's response
+      alert(userId)
 
       // Second API call to save the chat
       const saveChatResponse = await fetch(`http://localhost:8080/api/chats/create/${userId}`, {

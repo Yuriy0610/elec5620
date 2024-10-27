@@ -89,7 +89,7 @@ const ChatToLLM = () => {
                     <div className="space-y-4 mb-4">
                         {chats.map((chat, index) => (
                             <div key={index} className="p-4 border rounded-md shadow-sm bg-gray-100">
-                                <p>{chat.chat}</p> {/* Display the chat content */}
+                                <p>{chat.chat}</p> 
                             </div>
                         ))}
                     </div>
@@ -97,7 +97,7 @@ const ChatToLLM = () => {
 
                 <button 
                     onClick={sendToLLM}
-                    className="mt-4 bg-orange-700 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    className="mt-4 bg-orange-700 text-white px-4 py-2 rounded hover:bg-orange-700"
                 >
                     Get Analysis
                 </button>

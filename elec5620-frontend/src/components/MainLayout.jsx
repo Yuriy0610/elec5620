@@ -44,8 +44,8 @@ const MainLayout = () => {
                 </div>
                 <nav className="space-y-4">
                     {[
-                        { icon: Users, text: 'Introduction', to: '/main-layout' }, // Added Introduction page link
-                        { icon: Rocket, text: 'Quick Links', to: '/main-layout/home' }, // Updated icon for Quick Links
+                        { icon: Users, text: 'Introduction', to: '/main-layout' }, 
+                        { icon: Rocket, text: 'Quick Links', to: '/main-layout/home' },
                         { icon: Newspaper, text: 'HealthNews', to: '/main-layout/healthnews' },
                         { icon: ListChecks, text: 'Symptom Checker', to: '/main-layout/symptom-checker' },
                         { icon: SmilePlus, text: 'Mental Health', to: '/main-layout/mentalhealth' },
